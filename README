@@ -1,4 +1,4 @@
-# 🚗 Car Rental System API
+#Car Rental System API
 
 Projektas skirtas **vidinei darbuotojų automobilių nuomos sistemos valdymo** daliai. Backend sukurtas su **FastAPI**, naudojant **JWT autentifikaciją** ir aiškiai struktūruotą sluoksninę architektūrą.
 
