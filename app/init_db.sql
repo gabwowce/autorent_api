@@ -156,7 +156,8 @@ CREATE TABLE `Darbuotojai` (
   `telefono_nr` VARCHAR(255) NOT NULL ,
   `pareigos` VARCHAR(255) NOT NULL,
   `atlyginimas` DECIMAL(10,2) NOT NULL,
-  `isidarbinimo_data` DATE NOT NULL
+  `isidarbinimo_data` DATE NOT NULL,
+   `slaptazodis` VARCHAR(255) NOT NULL,
 );
 
 CREATE TABLE `Atsakingi_Automobiliai` (
