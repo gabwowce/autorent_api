@@ -1,10 +1,10 @@
-#Car Rental System API
+# Car Rental System API
 
 Projektas skirtas **vidinei darbuotojų automobilių nuomos sistemos valdymo** daliai. Backend sukurtas su **FastAPI**, naudojant **JWT autentifikaciją** ir aiškiai struktūruotą sluoksninę architektūrą.
 
 ---
 
-## ♻️ Architektūra (Layered Structure)
+## Architektūra (Layered Structure)
 
 ```
 POST /api/v1/auth/login
@@ -19,7 +19,7 @@ POST /api/v1/auth/login
 
 ---
 
-## 📂 Kodo struktūra
+## Kodo struktūra
 
 ```
 autorent_api/
@@ -50,7 +50,7 @@ autorent_api/
 
 ---
 
-## 🔐 Autentifikacija
+## Autentifikacija
 
 - JWT tokenas generuojamas per `POST /api/v1/auth/login`
 - `get_current_user()` tikrina tokeną visiems apsaugotiems endpointams
@@ -62,7 +62,7 @@ autorent_api/
 
 ---
 
-## 💼 Darbuotojai
+## Darbuotojai
 
 CRUD veiksmai:
 - Gauti visus darbuotojus (viešas)
@@ -75,7 +75,7 @@ CRUD veiksmai:
 
 ---
 
-## 🚗 Automobiliai
+## Automobiliai
 
 Pilnas CRUD + būsenos keitimas:
 - Pridėti, redaguoti, pašalinti
@@ -89,7 +89,7 @@ Pilnas CRUD + būsenos keitimas:
 
 ---
 
-## 🚪 Projekto naudojimas komandai
+## Projekto naudojimas komandai
 
 ### 1. Projekto paleidimas
 
@@ -118,7 +118,7 @@ git push origin feature/orders-endpoints
 
 ---
 
-## 🧱 Kaip kurti naujus endpointus (struktūruotai)
+## Kaip kurti naujus endpointus (struktūruotai)
 
 1. **Sukurk SQLAlchemy modelį**
    - `models/<modulis>.py`
