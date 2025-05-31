@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, DECIMAL
 from app.db.base import Base
+from sqlalchemy.orm import relationship
 
 class Employee(Base):
     __tablename__ = "darbuotojai"
@@ -13,3 +14,5 @@ class Employee(Base):
     atlyginimas = Column(DECIMAL)
     isidarbinimo_data = Column(Date)
     slaptazodis = Column(String)
+
+    uzklausos = relationship("ClientSupport", back_populates="darbuotojas")
