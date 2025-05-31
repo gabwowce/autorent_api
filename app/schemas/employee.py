@@ -1,19 +1,36 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from datetime import date
+from typing import Optional, List, Dict
 
-class EmployeeOut(BaseModel):
-    darbuotojo_id: int
+# 1️⃣ Bendras pagrindas – bendri laukai
+class EmployeeBase(BaseModel):
     vardas: str
     pavarde: str
-    el_pastas: str
+    el_pastas: EmailStr
+    telefono_nr: Optional[str]
     pareigos: str
+    atlyginimas: int
+    isidarbinimo_data: date
+
+# 2️⃣ Kūrimo schema (naudojama POST metu)
+class EmployeeCreate(EmployeeBase):
+    slaptazodis: str  # plaintext arba hashed vėliau
+
+# 3️⃣ Atnaujinimo schema
+class EmployeeUpdate(BaseModel):
+    vardas: Optional[str] = None
+    pavarde: Optional[str] = None
+    el_pastas: Optional[EmailStr] = None
+    telefono_nr: Optional[str] = None
+    pareigos: Optional[str] = None
+    atlyginimas: Optional[int] = None
+    isidarbinimo_data: Optional[date] = None
+    slaptazodis: Optional[str] = None
+
+# 4️⃣ Išvedimo schema su ID ir HATEOAS nuorodomis
+class EmployeeOut(EmployeeBase):
+    darbuotojo_id: int
+    links: List[Dict]
 
     class Config:
         orm_mode = True
-
-class EmployeeUpdate(BaseModel):
-    vardas: str | None = None
-    pavarde: str | None = None
-    el_pastas: str | None = None
-    pareigos: str | None = None
-    telefono_nr: str | None = None
-    slaptazodis: str | None = None
