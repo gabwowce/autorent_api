@@ -14,7 +14,7 @@ class Order(Base):
     paemimo_vietos_id = Column(Integer)
     grazinimo_vietos_id = Column(Integer)
     bendra_kaina = Column(Integer)
-    uzsakymo_busena = Column(String)
+    uzsakymo_busena = Column(String(50))
     turi_papildomas_paslaugas = Column(Boolean)
 
     # Santykiai
