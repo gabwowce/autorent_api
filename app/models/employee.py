@@ -6,13 +6,13 @@ class Employee(Base):
     __tablename__ = "darbuotojai"
 
     darbuotojo_id = Column(Integer, primary_key=True, index=True)
-    vardas = Column(String)
-    pavarde = Column(String)
-    el_pastas = Column(String, unique=True, index=True)
-    telefono_nr = Column(String)
-    pareigos = Column(String)
+    vardas = Column(String(50))
+    pavarde = Column(String(50))
+    el_pastas = Column(String(100), unique=True, index=True, nullable=False)
+    telefono_nr = Column(String(20))
+    pareigos = Column(String(50))
     atlyginimas = Column(DECIMAL)
     isidarbinimo_data = Column(Date)
-    slaptazodis = Column(String)
+    slaptazodis = Column(String(255))
 
     uzklausos = relationship("ClientSupport", back_populates="darbuotojas")
