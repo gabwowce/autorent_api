@@ -26,3 +26,7 @@ class UserInfo(BaseModel):
     el_pastas: str
     pareigos: str
     isidarbinimo_data: date
+    
+class ChangePasswordRequest(BaseModel):
+    senas_slaptazodis: str
+    naujas_slaptazodis: str
