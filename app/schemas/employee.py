@@ -33,7 +33,7 @@ class EmployeeBase(BaseModel):
     el_pastas: EmailStr
     telefono_nr: Optional[str]
     pareigos: str
-    atlyginimas: int
+    atlyginimas: float
     isidarbinimo_data: date
 
 class EmployeeCreate(EmployeeBase):
@@ -72,7 +72,7 @@ class EmployeeUpdate(BaseModel):
     el_pastas: Optional[EmailStr] = None
     telefono_nr: Optional[str] = None
     pareigos: Optional[str] = None
-    atlyginimas: Optional[int] = None
+    atlyginimas: Optional[float] = None
     isidarbinimo_data: Optional[date] = None
     slaptazodis: Optional[str] = None
 
