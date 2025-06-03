@@ -3,32 +3,28 @@ API Authentication endpoint tests
 
 Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
 
-Description:
-    Unit and integration tests for authentication endpoints:
-    - /login
-    - /register
-    - /me (profile)
-    - /change-password
-    - /logout
+This test suite contains unit and integration tests for user authentication API endpoints.
 
-    Covers success, failure and edge-cases, tests JWT logic, and endpoint validation.
-
-Requirements:
-    - conftest.py fixture `client`
-    - Test DB reset or rollback after each test (recommended)
-    - Test user created before login tests
+Tests cover:
+    - User registration (/register)
+    - User login (/login)
+    - Retrieving current user profile (/me)
+    - Changing user password (/change-password)
+    - Logging out (/logout)
+    - Various error and edge cases, including duplicate users, wrong credentials, and JWT logic.
 
 Usage:
     pytest tests/api/test_auth.py
 
+Dependencies:
+    - Requires `client` fixture from conftest.py (FastAPI TestClient)
+    - It is recommended to reset or rollback the test database after each test.
 """
 
-import pytest
 
-# Jei naudoji "client" fixture iš conftest.py
+import pytest
 from fastapi.testclient import TestClient
 
-# Dummy credentials for test user
 TEST_USER = {
     "vardas": "Testas",
     "pavarde": "Testavicius",
@@ -40,21 +36,23 @@ TEST_USER = {
     "isidarbinimo_data": "2024-01-01"
 }
 
-
 @pytest.fixture(scope="module")
 def create_test_user(client: TestClient):
-    """Sukuria testinį userį registracijos endpointu (one-time, module-scope)."""
+    """
+    Creates a test user using the registration endpoint if it does not exist yet.
+    Ensures the test user is available for authentication-related tests.
+    """
     resp = client.post("/api/v1/register", json=TEST_USER)
-    # Gali būti 400 jei user jau egzistuoja – svarbu, kad egzistuotų!
     assert resp.status_code in (200, 400)
     yield
-    # Po testų – galima userį ištrinti iš DB, jei reikia.
 
 
 def test_register_new_user(client):
-    """Testuoja sėkmingą registraciją (unikalus el. paštas)."""
+    """
+    Tests successful user registration using a unique email.
+    Checks that a new user can be registered and receives a 200 status.
+    """
     data = TEST_USER.copy()
-    # Sugeneruojam unikalų email, pvz. su atsitiktiniu arba timestamp
     import time
     unique_email = f"unikalus_{int(time.time())}@viko.lt"
     data["el_pastas"] = unique_email
@@ -65,14 +63,20 @@ def test_register_new_user(client):
 
 
 def test_register_duplicate_user(client, create_test_user):
-    """Testuoja dublikatų el. pašto registracijos klaidą."""
+    """
+    Tests registration with an existing email address.
+    Expects a 400 error and a specific error message about duplicate user.
+    """
     resp = client.post("/api/v1/register", json=TEST_USER)
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Employee with this email already exists"
 
 
 def test_login_success(client, create_test_user):
-    """Sėkmingas prisijungimas – grąžina JWT tokeną."""
+    """
+    Tests successful user login.
+    Ensures a valid JWT access token is returned upon correct credentials.
+    """
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
         "slaptazodis": TEST_USER["slaptazodis"]
@@ -84,7 +88,10 @@ def test_login_success(client, create_test_user):
 
 
 def test_login_wrong_password(client):
-    """Blogas slaptažodis – turi būti 401 klaida."""
+    """
+    Tests login with a wrong password for an existing user.
+    Expects a 401 error and an invalid credentials message.
+    """
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
         "slaptazodis": "netinkamasSlaptazodis"
@@ -94,7 +101,10 @@ def test_login_wrong_password(client):
 
 
 def test_login_nonexistent_user(client):
-    """Neegzistuojantis vartotojas – 401 klaida."""
+    """
+    Tests login with an email that does not exist in the system.
+    Expects a 401 error and an invalid credentials message.
+    """
     resp = client.post("/api/v1/login", json={
         "el_pastas": "nesamas@viko.lt",
         "slaptazodis": "betkas"
@@ -104,7 +114,10 @@ def test_login_nonexistent_user(client):
 
 
 def test_me_endpoint_success(client, create_test_user):
-    """Grąžina prisijungusio vartotojo profilį su JWT tokenu."""
+    """
+    Tests the /me endpoint with a valid JWT token.
+    Ensures the endpoint returns the correct user profile data.
+    """
     # Pirma prisijungiame
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
@@ -120,14 +133,19 @@ def test_me_endpoint_success(client, create_test_user):
 
 
 def test_me_endpoint_unauthorized(client):
-    """Be tokeno turi mesti 401 klaidą."""
+    """
+    Tests accessing /me endpoint without an authorization token.
+    Expects a 401 or 403 error.
+    """
     resp = client.get("/api/v1/me")
     assert resp.status_code == 403 or resp.status_code == 401
 
 
 def test_change_password_success(client, create_test_user):
-    """Keičia slaptažodį – patikrina, kad naujas slaptažodis veikia loginui."""
-    # Prisijungiam ir gaunam JWT
+    """
+    Tests changing the user's password using the /change-password endpoint.
+    Verifies that the new password works and (optionally) restores the old password for consistency.
+    """
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
         "slaptazodis": TEST_USER["slaptazodis"]
@@ -144,7 +162,6 @@ def test_change_password_success(client, create_test_user):
     assert resp.status_code == 200
     assert resp.json()["message"] == "Password updated successfully"
 
-    # Patikrinam login su nauju slaptažodžiu
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
         "slaptazodis": new_pw
@@ -152,17 +169,17 @@ def test_change_password_success(client, create_test_user):
     assert resp.status_code == 200
     assert "access_token" in resp.json()
 
-    # (Optional) Grąžinam atgal seną slaptažodį, kad kiti testai nenulūžtų
     resp = client.post("/api/v1/change-password", json={
         "senas_slaptazodis": new_pw,
         "naujas_slaptazodis": TEST_USER["slaptazodis"]
     }, headers={"Authorization": f"Bearer {resp.json()['access_token']}"})
-    # Gali nesuveikti dėl tokeno, praleisti
 
 
 def test_change_password_wrong_old_pw(client, create_test_user):
-    """Bandymas keisti slaptažodį su neteisingu senu slaptažodžiu."""
-    # Prisijungiam ir gaunam JWT
+    """
+    Tests changing the password using an incorrect current password.
+    Expects a 400 error and a specific error message.
+    """
     resp = client.post("/api/v1/login", json={
         "el_pastas": TEST_USER["el_pastas"],
         "slaptazodis": TEST_USER["slaptazodis"]
@@ -179,8 +196,10 @@ def test_change_password_wrong_old_pw(client, create_test_user):
 
 
 def test_logout(client):
-    """Logout endpointas veikia (nors tai tik placeholder'is, turi grąžinti 200)."""
+    """
+    Tests the /logout endpoint.
+    Verifies that it returns a successful logout message and status code 200.
+    """
     resp = client.post("/api/v1/logout")
     assert resp.status_code == 200
     assert resp.json()["message"] == "Successfully logged out"
-

@@ -12,10 +12,27 @@ from fastapi.testclient import TestClient
 from app.main import app
 from uuid import uuid4
 
+from app.api.deps import get_db
+from app.models import Location
+
 client = TestClient(app)
 
+@pytest.fixture(scope="module")
+def ensure_place_exists():
+    """
+    Ensures that a location with ID=1 exists in the database for test setup.
+    If not present, creates the location.
+    """
+    db = next(get_db())
+    vieta = db.query(Location).filter_by(vietos_id=1).first()
+    if not vieta:
+        vieta = Location(vietos_id=1, pavadinimas="Testo vieta", adresas="Test gatvė 1", miestas="Vilnius")
+        db.add(vieta)
+        db.commit()
+    yield vieta
+
 @pytest.fixture
-def prepared_order():
+def prepared_order(ensure_place_exists):
     """
     Prepares an order for tests by creating necessary related data:
     location, car, employee, and client via API POST requests.
@@ -47,10 +64,10 @@ def prepared_order():
         "vin_kodas": uuid4().hex[:16].upper(),
         "spalva": "Juoda",
         "kebulo_tipas": "Sedanas",
-        "pavarų_deze": "Automatinė",
+        "pavarų_deze": "automatinė",
         "variklio_turis": 1.6,
         "galia_kw": 97,
-        "kuro_tipas": "Benzinas",
+        "kuro_tipas": "benzinas",
         "rida": 15000,
         "sedimos_vietos": 5,
         "klimato_kontrole": True,
@@ -202,7 +219,9 @@ def test_update_invoice_status(prepared_order):
     assert update_resp.status_code == 200
     data = update_resp.json()
     assert_invoiceout_fields(data)
-    assert data["status"] in ["apmokėta", "patvirtinta"]
+    # Atgal gaunamas status gali būti vis dar „patvirtinta“ arba „apmokėta“, priklausomai ar backend atnaujino order status
+    assert data["status"] in ["apmokėta", "patvirtinta"]  # Palik šį assert'ą kaip yra
+
 
 
 def test_delete_invoice(prepared_order):
