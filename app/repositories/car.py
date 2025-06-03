@@ -1,14 +1,54 @@
+"""
+app/repositories/car.py
+
+Repository layer for car-related database operations.
+
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+
+Description:
+    Provides functions for interacting with the Automobiliai table:
+    create, read, update, delete, search, status update, and statistics.
+"""
 from sqlalchemy.orm import Session
-from app.models.car import Car
 from sqlalchemy import func
+from app.models.car import Car
 
 def get_all(db: Session):
+    """
+    Retrieve all cars from the database.
+
+    Args:
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        list[Car]: All car records.
+    """
     return db.query(Car).all()
 
 def get_by_id(db: Session, car_id: int):
+    """
+    Get a car by its ID.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        car_id (int): Car ID.
+
+    Returns:
+        Car | None: Car object or None if not found.
+    """
     return db.query(Car).filter(Car.automobilio_id == car_id).first()
 
 def create(db: Session, data: dict):
+    """
+    Create a new car record.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        data (dict): Car fields.
+
+    Returns:
+        Car: Newly created car.
+    """
     car = Car(**data)
     db.add(car)
     db.commit()
@@ -16,6 +56,17 @@ def create(db: Session, data: dict):
     return car
 
 def update(db: Session, car_id: int, updates: dict):
+    """
+    Update an existing car by ID.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        car_id (int): Car ID.
+        updates (dict): Fields to update.
+
+    Returns:
+        Car | None: Updated car or None if not found.
+    """
     car = get_by_id(db, car_id)
     if not car:
         return None
@@ -26,6 +77,16 @@ def update(db: Session, car_id: int, updates: dict):
     return car
 
 def delete(db: Session, car_id: int):
+    """
+    Delete a car by ID.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        car_id (int): Car ID.
+
+    Returns:
+        Car | None: Deleted car or None if not found.
+    """
     car = get_by_id(db, car_id)
     if not car:
         return None
@@ -34,6 +95,17 @@ def delete(db: Session, car_id: int):
     return car
 
 def update_status(db: Session, car_id: int, status: str):
+    """
+    Update car status field.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        car_id (int): Car ID.
+        status (str): New status.
+
+    Returns:
+        Car | None: Updated car or None if not found.
+    """
     car = get_by_id(db, car_id)
     if not car:
         return None
@@ -42,6 +114,15 @@ def update_status(db: Session, car_id: int, status: str):
     return car
 
 def get_car_counts_by_status(db: Session):
+    """
+    Get a count of cars grouped by their status.
+
+    Args:
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        list[dict]: Status and count pairs.
+    """
     results = (
         db.query(Car.automobilio_statusas, func.count().label("value"))
         .group_by(Car.automobilio_statusas)
@@ -69,6 +150,22 @@ def search_cars(
     metai: int = None,
     sedimos_vietos: int = None
 ):
+    """
+    Search for cars using optional filters.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        marke (str): Brand.
+        modelis (str): Model.
+        spalva (str): Color.
+        status (str): Status.
+        kuro_tipas (str): Fuel type.
+        metai (int): Year.
+        sedimos_vietos (int): Seat count.
+
+    Returns:
+        list[Car]: Filtered cars matching criteria.
+    """
     query = db.query(Car)
 
     if marke:
