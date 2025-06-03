@@ -74,3 +74,46 @@ def get_all(db: Session):
     Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
     """
     return db.query(Employee).all()
+
+def update(db: Session, darbuotojo_id: int, updates: dict):
+    """
+    Update employee record.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        darbuotojo_id (int): Employee ID.
+        updates (dict): Fields to update.
+
+    Returns:
+        Employee or None: Updated employee object or None if not found.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
+    employee = db.query(Employee).filter(Employee.darbuotojo_id == darbuotojo_id).first()
+    if not employee:
+        return None
+    for key, value in updates.items():
+        setattr(employee, key, value)
+    db.commit()
+    db.refresh(employee)
+    return employee
+
+def delete(db: Session, darbuotojo_id: int):
+    """
+    Delete employee record.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        darbuotojo_id (int): Employee ID.
+
+    Returns:
+        True if deleted, None if not found.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
+    employee = db.query(Employee).filter(Employee.darbuotojo_id == darbuotojo_id).first()
+    if not employee:
+        return False
+    db.delete(employee)
+    db.commit()
+    return True
