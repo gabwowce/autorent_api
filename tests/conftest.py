@@ -1,9 +1,9 @@
 ﻿"""
 Pytest conftest module for AutoRect
 
-- Užkrauna testinę MySQL DB (testautorentdb)
-- Visi API testai gauna TestClient su perrašytu get_db (visi repo/unit testai – švari SQLAlchemy sesija)
-- Visi DB veiksmai izoliavimui rollback'inami po kiekvieno testavimo
+- Loads the test MySQL DB (testautorentdb)
+- All API tests use TestClient with overridden get_db dependency (repository/unit tests get a fresh SQLAlchemy session)
+- All DB changes are rolled back after each test to keep tests isolated
 
 Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
 """
@@ -17,14 +17,21 @@ os.environ["DATABASE_URL"] = "mysql+pymysql://root:1234@localhost:3306/testautor
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
 
-# Priverstinai importuok visus savo modelius
+# Force-import all models so that Base.metadata sees them
 import app.models
 
 from app.main import app
 
-# Lentelių sukurimas/pašalinimas visai testų sesijai
+# ------------------------
+# Database setup/teardown
+# ------------------------
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_database():
+    """
+    Creates all tables in the test database at the start of the test session.
+    Drops all tables after all tests finish.
+    Ensures the DB schema is always clean for testing.
+    """
     Base.metadata.create_all(bind=engine)
     yield
     with engine.connect() as conn:
@@ -33,10 +40,16 @@ def setup_test_database():
         Base.metadata.drop_all(bind=conn)
         conn.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
 
-# Izoliuota DB sesija kiekvienam testų moduliui
+# -------------------------------
+# Isolated SQLAlchemy session per test module
+# -------------------------------
 @pytest.fixture(scope="module")
 def db_session():
-    """Izoliuota SQLAlchemy sesija – rollback po kiekvieno testavimo."""
+    """
+    Provides an isolated SQLAlchemy session for each test module.
+    All changes are rolled back after the module's tests complete.
+    Keeps the test database clean and avoids test cross-contamination.
+    """
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionLocal(bind=connection)
@@ -47,13 +60,17 @@ def db_session():
         transaction.rollback()
         connection.close()
 
-# API TestClient fixture su module scope
+# ---------------------------------
+# FastAPI TestClient with test DB
+# ---------------------------------
 @pytest.fixture(scope="module")
 def client(db_session):
-    """FastAPI TestClient – visiems API testams, su testine DB."""
-
-    # Override turi būti TIKRAS tavo app dependency!
-    from app.db.session import get_db  # jei jis čia, arba tikslus kelias
+    """
+    Provides a FastAPI TestClient for API tests, using the test database.
+    Overrides FastAPI's get_db dependency so all endpoints use the test session.
+    Cleans up overrides after tests.
+    """
+    from app.api.deps import get_db
 
     def override_get_db():
         try:
