@@ -1,3 +1,14 @@
+"""
+app/models/location.py
+
+SQLAlchemy ORM model representing a delivery or pickup location.
+
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+
+Description:
+    Defines the "pristatymo_vietos" table structure.
+    Stores delivery/pick-up location information such as name, address, and city.
+"""
 from sqlalchemy import Column, Integer, String
 from app.db.base import Base
 
