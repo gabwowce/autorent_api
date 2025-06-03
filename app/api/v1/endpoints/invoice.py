@@ -1,4 +1,4 @@
-"""
+﻿"""
 app/api/v1/endpoints/invoice.py
 
 API endpoints for invoice management.
@@ -15,6 +15,9 @@ from app.api.deps import get_db
 from app.schemas.invoice import InvoiceCreate, InvoiceStatusUpdate, InvoiceOut
 from app.repositories import invoice as crud_invoice
 from utils.hateoas import generate_links
+from app.models.order import Order
+from app.models import client as klientas_model
+
 
 router = APIRouter(
     prefix="/invoices",
@@ -79,9 +82,21 @@ def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
     Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
     """
     created = crud_invoice.create_invoice(db, invoice)
+
+    # Rask order ir klientą (nes reikia status, client_first_name, client_last_name)
+    order = db.query(Order).filter(Order.uzsakymo_id == created.uzsakymo_id).first()
+    client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
+
     return {
-        **created.__dict__,
-        "links": generate_invoice_links(created.__dict__)
+        "invoice_id": created.saskaitos_id,
+        "order_id": created.uzsakymo_id,
+        "kliento_id": order.kliento_id,
+        "total": created.suma,
+        "invoice_date": str(created.saskaitos_data),  # jei reikia, paversk į str
+        "status": order.uzsakymo_busena,
+        "client_first_name": client.vardas,
+        "client_last_name": client.pavarde,
+        "links": generate_invoice_links(created)
     }
 
 @router.delete("/{invoice_id}", operation_id="deleteInvoice")
@@ -127,7 +142,16 @@ def update_status(invoice_id: int, status: InvoiceStatusUpdate, db: Session = De
     updated = crud_invoice.update_invoice_status(db, invoice_id, status)
     if not updated:
         raise HTTPException(status_code=404, detail="Invoice not found")
+    order = db.query(Order).filter(Order.uzsakymo_id == updated.uzsakymo_id).first()
+    client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
     return {
-        **updated.__dict__,
-        "links": generate_invoice_links(updated.__dict__)
+        "invoice_id": updated.saskaitos_id,
+        "order_id": updated.uzsakymo_id,
+        "kliento_id": order.kliento_id,
+        "total": updated.suma,
+        "invoice_date": str(updated.saskaitos_data),
+        "status": order.uzsakymo_busena,
+        "client_first_name": client.vardas,
+        "client_last_name": client.pavarde,
+        "links": generate_invoice_links(updated)
     }

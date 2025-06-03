@@ -107,6 +107,7 @@ def get_latest_reservations_with_details(db: Session, limit: int = 5):
             Reservation.automobilio_id,
             Reservation.rezervacijos_pradzia,
             Reservation.rezervacijos_pabaiga,
+            Reservation.busena,              
             Car.marke,
             Car.modelis,
             Client.vardas,
