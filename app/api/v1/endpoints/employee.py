@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.repositories import employee as employee_repo
 from app.schemas.employee import EmployeeOut, EmployeeUpdate
+from app.schemas.employee import EmployeeCreate
 from app.api.deps import get_db
 from app.services.auth_service import get_password_hash
 from utils.hateoas import generate_links
@@ -21,6 +22,34 @@ router = APIRouter(
     prefix="/employees",
     tags=["Employees"]
 )
+
+@router.post("/", response_model=EmployeeOut, operation_id="createEmployee")
+def create_employee(data: EmployeeCreate, db: Session = Depends(get_db)):
+    """
+    Create a new employee.
+
+    Args:
+        data (EmployeeCreate): Employee creation payload.
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        EmployeeOut: Created employee with HATEOAS links.
+
+    Raises:
+        HTTPException: If email already exists.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
+    if employee_repo.get_by_email(db, data.el_pastas):
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    employee_dict = data.dict()
+    employee_dict["slaptazodis"] = get_password_hash(employee_dict["slaptazodis"])
+    employee = employee_repo.create_employee(db, employee_dict)
+    return {
+        **employee.__dict__,
+        "links": generate_links("employees", employee.darbuotojo_id, ["update", "delete"])
+    }
 
 @router.get("/", response_model=list[EmployeeOut], operation_id="getAllEmployees")
 def get_employees(db: Session = Depends(get_db)):
