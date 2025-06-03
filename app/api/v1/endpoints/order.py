@@ -167,3 +167,28 @@ def get_orders_by_client(kliento_id: int, db: Session = Depends(get_db)):
         }
         for order in orders
     ]
+
+
+@router.put("/{uzsakymo_id}", response_model=schemas.OrderOut, operation_id="updateOrder")
+def update_order(uzsakymo_id: int, order_update: schemas.OrderUpdate, db: Session = Depends(get_db)):
+    order = repo.get_by_id(db, uzsakymo_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    # Čia logika kaip updatinti
+    if order_update.uzsakymo_busena is not None:
+        order.uzsakymo_busena = order_update.uzsakymo_busena
+    if order_update.grazinimo_data is not None:
+        order.grazinimo_data = order_update.grazinimo_data
+    if order_update.turi_papildomas_paslaugas is not None:
+        order.turi_papildomas_paslaugas = order_update.turi_papildomas_paslaugas
+    db.commit()
+    db.refresh(order)
+    return {
+        **order.__dict__,
+        "links": [
+            {"rel": "self", "href": f"/orders/{order.uzsakymo_id}"},
+            {"rel": "client", "href": f"/clients/{order.kliento_id}"},
+            {"rel": "car", "href": f"/cars/{order.automobilio_id}"},
+            {"rel": "delete", "href": f"/orders/{order.uzsakymo_id}"}
+        ]
+    }
