@@ -6,25 +6,25 @@ Pydantic schemas for reservation operations in the Car Rental API.
 Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
 
 Description:
-    Provides data models for reservation creation, update, API responses,
-    and reservation summary views, including HATEOAS support.
+    Defines data models for reservation creation, update, full responses,
+    and reservation summary with HATEOAS support.
 """
+
 from pydantic import BaseModel
 from datetime import date
 from typing import List, Dict, Optional
 
+
 class ReservationBase(BaseModel):
     """
-    Base schema for reservation data.
+    Common base schema for reservation data.
 
     Attributes:
-        kliento_id (int): Client identifier.
-        automobilio_id (int): Car identifier.
+        kliento_id (int): ID of the client.
+        automobilio_id (int): ID of the car.
         rezervacijos_pradzia (date): Reservation start date.
         rezervacijos_pabaiga (date): Reservation end date.
-        busena (str): Reservation status.
-
-    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+        busena (str): Status of the reservation.
     """
     kliento_id: int
     automobilio_id: int
@@ -32,71 +32,67 @@ class ReservationBase(BaseModel):
     rezervacijos_pabaiga: date
     busena: str
 
+
 class ReservationCreate(ReservationBase):
     """
-    Schema for creating a new reservation.
-
-    Inherits from:
-        ReservationBase
-
-    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    Schema used for creating a new reservation.
+    Inherits all fields from ReservationBase.
     """
     pass
 
+
 class ReservationUpdate(BaseModel):
     """
-    Schema for updating an existing reservation.
+    Schema used for partially updating a reservation.
 
     Attributes:
-        rezervacijos_pradzia (Optional[date]): Updated start date.
-        rezervacijos_pabaiga (Optional[date]): Updated end date.
-        busena (Optional[str]): Updated reservation status.
-
-    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+        rezervacijos_pradzia (Optional[date]): New start date.
+        rezervacijos_pabaiga (Optional[date]): New end date.
+        busena (Optional[str]): New status.
     """
     rezervacijos_pradzia: Optional[date] = None
     rezervacijos_pabaiga: Optional[date] = None
     busena: Optional[str] = None
 
+
 class ReservationOut(ReservationBase):
     """
-    Schema for returning reservation information to the client.
+    Full reservation schema returned to the client.
 
     Attributes:
-        rezervacijos_id (int): Unique reservation identifier.
-        kliento_id (int): Client identifier.
-        automobilio_id (int): Car identifier.
-        links (List[Dict]): List of HATEOAS links.
-
-    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+        rezervacijos_id (int): Unique identifier of the reservation.
+        links (List[Dict]): HATEOAS links for navigation.
     """
     rezervacijos_id: int
-    kliento_id: int
-    automobilio_id: int
     links: List[Dict]
 
     class Config:
         orm_mode = True
 
+
 class ReservationSummary(BaseModel):
     """
-    Schema for reservation summary responses.
+    Summary schema for displaying the latest reservations with details.
 
     Attributes:
-        rezervacijos_id (int): Unique reservation identifier.
-        rezervacijos_pradzia (date): Reservation start date.
-        rezervacijos_pabaiga (date): Reservation end date.
-        marke (str): Car brand.
-        modelis (str): Car model.
-        vardas (str): Client's first name.
-        pavarde (str): Client's last name.
-        links (List[Dict]): List of HATEOAS links.
-
-    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+        rezervacijos_id (int): Unique identifier of the reservation.
+        kliento_id (int): ID of the client.
+        automobilio_id (int): ID of the car.
+        rezervacijos_pradzia (date): Start date of the reservation.
+        rezervacijos_pabaiga (date): End date of the reservation.
+        busena (str): Reservation status.
+        marke (str): Brand of the car.
+        modelis (str): Model of the car.
+        vardas (str): First name of the client.
+        pavarde (str): Last name of the client.
+        links (List[Dict]): HATEOAS links for frontend use.
     """
     rezervacijos_id: int
+    kliento_id: int
+    automobilio_id: int
     rezervacijos_pradzia: date
     rezervacijos_pabaiga: date
+    busena: str
     marke: str
     modelis: str
     vardas: str

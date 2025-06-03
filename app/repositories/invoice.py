@@ -61,7 +61,12 @@ def create_invoice(db: Session, invoice_data: InvoiceCreate):
 
     Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
     """
-    invoice = Invoice(**invoice_data.dict())
+    data = invoice_data.dict()
+    invoice = Invoice(
+        uzsakymo_id=data["order_id"],
+        suma=data["total"],
+        saskaitos_data=data["invoice_date"]
+    )
     db.add(invoice)
     db.commit()
     db.refresh(invoice)

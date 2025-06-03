@@ -1,9 +1,36 @@
+"""
+app/schemas/order.py
+
+Pydantic schemas for order operations in the Car Rental API.
+
+Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+
+Description:
+    Contains data models for order creation, update, and output in the API,
+    including support for HATEOAS links.
+"""
 from pydantic import BaseModel
 from datetime import date
 from typing import List, Dict, Optional
 
-# 1️⃣ Bendra bazinė schema – tik bendri laukeliai
 class OrderBase(BaseModel):
+    """
+    Base schema for order data (common order fields).
+
+    Attributes:
+        kliento_id (int): Identifier for the client placing the order.
+        automobilio_id (int): Identifier for the rented car.
+        darbuotojo_id (int): Identifier for the handling employee.
+        nuomos_data (date): Date when the rental starts.
+        grazinimo_data (date): Date when the rental ends.
+        paemimo_vietos_id (int): Identifier for the pick-up location.
+        grazinimo_vietos_id (int): Identifier for the drop-off location.
+        bendra_kaina (int): Total price for the order.
+        uzsakymo_busena (str): Current status of the order.
+        turi_papildomas_paslaugas (bool): Indicates if there are additional services.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
     kliento_id: int
     automobilio_id: int
     darbuotojo_id: int
@@ -15,18 +42,44 @@ class OrderBase(BaseModel):
     uzsakymo_busena: str
     turi_papildomas_paslaugas: bool
 
-# 2️⃣ Naudojama POST /orders
 class OrderCreate(OrderBase):
+    """
+    Schema for creating a new order.
+
+    Inherits from:
+        OrderBase
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
     pass
 
-# 3️⃣ Naudojama PUT/PATCH /orders/{id} (jei darysi)
 class OrderUpdate(BaseModel):
-    uzsakymo_busena: Optional[str]
-    grazinimo_data: Optional[date]
-    turi_papildomas_paslaugas: Optional[bool]
+    """
+    Schema for updating an existing order.
 
-# 4️⃣ Naudojama atsakymams (su ID ir HATEOAS)
+    Attributes:
+        uzsakymo_busena (Optional[str]): Updated status of the order.
+        grazinimo_data (Optional[date]): Updated rental end date.
+        turi_papildomas_paslaugas (Optional[bool]): Updated flag for additional services.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
+    uzsakymo_busena: Optional[str]  = None
+    grazinimo_data: Optional[date]  = None
+    turi_papildomas_paslaugas: Optional[bool]  = None
+
 class OrderOut(OrderBase):
+    """
+    Schema for returning order information to the client, with additional fields.
+
+    Attributes:
+        uzsakymo_id (int): Unique identifier for the order.
+        kliento_id (int): Identifier for the client.
+        automobilio_id (int): Identifier for the car.
+        links (List[Dict]): List of HATEOAS links for related resources.
+
+    Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
+    """
     uzsakymo_id: int
     kliento_id: int
     automobilio_id: int
