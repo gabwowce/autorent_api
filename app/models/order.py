@@ -37,7 +37,7 @@ class Order(Base):
 
     uzsakymo_id = Column(Integer, primary_key=True, index=True)
     kliento_id = Column(Integer, ForeignKey("klientai.kliento_id"))
-    automobilio_id = Column(Integer, ForeignKey("automobiliai.automobilio_id"))
+    automobilio_id = Column(Integer, ForeignKey("Automobiliai.automobilio_id"))
     darbuotojo_id = Column(Integer, ForeignKey("darbuotojai.darbuotojo_id"))
     nuomos_data = Column(Date)
     grazinimo_data = Column(Date)
