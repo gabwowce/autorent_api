@@ -18,10 +18,7 @@ from app.repositories import employee as employee_repo
 from app.services.auth_service import verify_password, create_access_token, get_password_hash
 from app.api.deps import get_current_user, get_db
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["Authentication"]
-)
+router = APIRouter()
 
 @router.post("/login", response_model=TokenResponse, operation_id="login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
@@ -45,17 +42,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid login credentials")
 
     token = create_access_token(data={"sub": db_user.el_pastas})
-
-    response.set_cookie(
-        key="token",
-        value=token,
-        httponly=True,
-        samesite="Lax",  
-        secure=False,   
-        path="/"
-    )
-
-    return {"access_token": token}
+    return TokenResponse(access_token=token)
 
 @router.post("/register", operation_id="register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
@@ -78,8 +65,10 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Employee with this email already exists")
 
+    hashed = get_password_hash(request.slaptazodis)
     employee_data = request.dict()
     employee_data["slaptazodis"] = get_password_hash(employee_data.pop("slaptazodis"))
+
 
     new_employee = employee_repo.create_employee(db, employee_data)
     return {"message": "Employee created successfully", "id": new_employee.darbuotojo_id}
