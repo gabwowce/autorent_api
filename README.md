@@ -1,4 +1,4 @@
-# 🚗 Car Rental System API
+# Car Rental System API
 
 **Automobilių nuomos sistemos** backend dalis, skirta darbuotojų ir visų vidinių procesų valdymui.
 
@@ -10,7 +10,7 @@
 
 ---
 
-## 🔗 Pagrindiniai resursai
+## Pagrindiniai resursai
 
 | Resursas           | Endpointas           | Aprašas                        |
 |--------------------|---------------------|--------------------------------|
@@ -26,7 +26,7 @@
 
 ---
 
-## ♻️ Architektūra
+## Architektūra
 
 ```
 [ FastAPI endpoints ]
@@ -40,7 +40,7 @@
 
 ---
 
-## 📂 Kodo struktūra
+## Kodo struktūra
 
 ```
 autorent_api/
@@ -101,7 +101,7 @@ autorent_api/
 
 ---
 
-## 📘 Svarbiausi endpoint’ai
+## Svarbiausi endpoint’ai
 
 <details>
 <summary><strong>Autentifikacija</strong></summary>
@@ -207,7 +207,7 @@ autorent_api/
 
 ---
 
-## ⚙️ Paleidimo instrukcija
+## Paleidimo instrukcija
 
 ### 1. Klonavimas ir priklausomybės:
 
@@ -239,19 +239,13 @@ DATABASE_URL=
 DATABASE_URL=mysql+pymysql://root:12301@localhost:3306/autorentdb
 ```
 
-📌 Prisijungimo duomenys turi atitikti tavo MySQL naudotoją, slaptažodį ir bazės pavadinimą.
+Prisijungimo duomenys turi atitikti tavo MySQL naudotoją, slaptažodį ir bazės pavadinimą.
 
 ---
 
 ### 3. Duomenų bazės paruošimas:
 
-1. Įsitikink, kad veikia MySQL serveris. Galimos aplinkos:
-
-   - 🟢 **XAMPP**, **MAMP**, **WAMP** (Windows/Mac lokalūs serveriai)
-   - 🟢 **MySQL Workbench**, **DBeaver** (grafiniai klientai)
-   - 🟢 **phpMyAdmin** (per naršyklę)
-   - 🟢 **MySQL CLI** (komandinė eilutė)
-
+1. Įsitikink, kad veikia MySQL serveris.
 2. Sukurk duomenų bazę:
    - Per CLI:
 
@@ -271,7 +265,7 @@ mysql -u root -p autorentdb < init_db.sql
 - `-p` – paprašys slaptažodžio
 - `autorentdb` – bazės pavadinimas
 
-✅ Jei pavyko – nematysi klaidų, o duomenys bus matomi GUI ar CLI.
+Jei pavyko – nematysi klaidų, o duomenys bus matomi GUI ar CLI.
 
 ---
 
@@ -281,11 +275,11 @@ mysql -u root -p autorentdb < init_db.sql
 uvicorn app.main:app --reload
 ```
 
-🧪 Swagger: http://localhost:8000/docs
+Swagger: http://localhost:8000/docs
 
 ---
 
-## 👥 Darbo su šakomis eiga
+## Darbo su šakomis eiga
 
 1. Naujos šakos kūrimas:
 
@@ -304,11 +298,11 @@ git push origin feature/orders-endpoints
 3. Pull request:
    - Eik į GitHub ➝ tavo šaka ➝ „Compare & pull request“ ➝ Merge
 
-📌 `main` apsaugotas nuo tiesioginio push
+`main` apsaugotas nuo tiesioginio push
 
 ---
 
-## 🧱 Naujo endpoint kūrimo gidas
+## Naujo endpoint kūrimo gidas
 
 1. `models/` ➝ SQLAlchemy modelis
 2. `schemas/` ➝ `ModelCreate`, `ModelUpdate`, `ModelOut`
