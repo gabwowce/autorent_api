@@ -31,9 +31,14 @@
 
 ```
 autorent_api/
+├── README.md
+├── requirements.txt
 ├── app/
+│   ├── .env.example
+│   ├── init_db.sql
 │   ├── main.py
 │   ├── api/
+│   │   ├── deps.py
 │   │   └── v1/endpoints/
 │   │       ├── auth.py
 │   │       ├── car.py
@@ -45,18 +50,18 @@ autorent_api/
 │   │       ├── order.py
 │   │       └── reservation.py
 │   ├── db/
-│   │   ├── session.py
-│   │   └── base.py
+│   │   ├── base.py
+│   │   └── session.py
 │   ├── models/
 │   │   ├── car.py
 │   │   ├── client.py
 │   │   ├── client_support.py
 │   │   ├── employee.py
-│   │   ├── geocode.py
 │   │   ├── invoice.py
 │   │   ├── location.py
 │   │   ├── order.py
-│   │   └── reservation.py
+│   │   ├── reservation.py
+│   │   └── __init__.py
 │   ├── repositories/
 │   │   ├── car.py
 │   │   ├── client.py
@@ -65,7 +70,8 @@ autorent_api/
 │   │   ├── geocode.py
 │   │   ├── invoice.py
 │   │   ├── order.py
-│   │   └── reservation.py
+│   │   ├── reservation.py
+│   │   └── __init__.py
 │   ├── schemas/
 │   │   ├── auth.py
 │   │   ├── car.py
@@ -74,16 +80,39 @@ autorent_api/
 │   │   ├── employee.py
 │   │   ├── geocode.py
 │   │   ├── invoice.py
+│   │   ├── location.py
 │   │   ├── order.py
-│   │   └── reservation.py
+│   │   ├── reservation.py
+│   │   ├── reservationSummary.py
+│   │   └── __init__.py
+│   └── services/
+│       ├── auth_service.py
+│       └── __init__.py
+├── docs/
+│   └── API_endpoints_plan.md
+├── tests/
+│   ├── conftest.py
+│   ├── init_test_db.sql
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── test_auth.py
+│   │   ├── test_car.py
+│   │   ├── test_client.py
+│   │   ├── test_client_support.py
+│   │   ├── test_employee.py
+│   │   ├── test_geocode.py
+│   │   ├── test_invoice.py
+│   │   ├── test_order.py
+│   │   ├── test_reservation.py
+│   │   └── __init__.py
 │   ├── services/
-│   │   └── auth_service.py
-│   ├── utils/
-│   │   └── hateoas.py
-│   └── api/deps.py
-├── init_db.sql
-├── .env.example
-└── requirements.txt
+│   │   ├── test_auth_service.py
+│   │   └── __init__.py
+│   └── utils/
+│       ├── test_hateoas.py
+│       └── __init__.py
+└── utils/
+    └── hateoas.py
 ```
 
 ---
