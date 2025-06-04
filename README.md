@@ -1,20 +1,41 @@
 # 🚗 Car Rental System API
 
-Projektas skirtas **vidinei darbuotojų automobilių nuomos sistemos valdymo** daliai. Backend sukurtas su **FastAPI**, naudojant **JWT autentifikaciją** ir aiškiai struktūruotą sluoksninę architektūrą.
+**Automobilių nuomos sistemos** backend dalis, skirta darbuotojų ir visų vidinių procesų valdymui.
+
+- Sukurta su **FastAPI**
+- Naudojama **JWT autentifikacija**
+- „Layered architecture“
+- HATEOAS nuorodos pagal Richardson Maturity Model 4 lygį
+- Modernios REST API praktikos
 
 ---
 
-## ♻️ Architektūra (Layered Structure)
+## 🔗 Pagrindiniai resursai
+
+| Resursas           | Endpointas           | Aprašas                        |
+|--------------------|---------------------|--------------------------------|
+| Autentifikacija    | `/auth`             | Prisijungimas, registracija    |
+| Darbuotojai        | `/employees`        | Darbuotojų valdymas            |
+| Klientai           | `/clients`          | Klientų valdymas               |
+| Automobiliai       | `/cars`             | Automobilių valdymas           |
+| Užsakymai          | `/orders`           | Užsakymų valdymas              |
+| Rezervacijos       | `/reservations`     | Rezervacijų valdymas           |
+| Sąskaitos          | `/invoices`         | Sąskaitų generavimas           |
+| Geokodavimas       | `/geocode`          | Adreso konvertavimas į koordinates |
+| Klientų palaikymas | `/support`          | Pagalbos užklausos             |
+
+---
+
+## ♻️ Architektūra
 
 ```
-POST /api/v1/auth/login
-    │
-    ▼
-[ endpoint (auth.py) ]
-    │
-    ├➞ schemas/ ➞ validacija (LoginRequest)
-    ├➞ repositories/ ➞ DB užklausos (get_by_email)
-    └➞ services/ ➞ verslo logika (slaptažodžių tikrinimas, JWT)
+[ FastAPI endpoints ]
+        │
+        ▼
+[ Schemos (input/output) ] ➞ [ Repozitorijos (CRUD) ] ➞ [ Paslaugos (verslo logika, JWT, hash) ]
+        │
+        ▼
+ [ DB Modeliai (SQLAlchemy) ]
 ```
 
 ---
@@ -24,75 +45,174 @@ POST /api/v1/auth/login
 ```
 autorent_api/
 ├── app/
-│   ├── main.py                       ➞ Programos paleidimo failas
+│   ├── main.py
 │   ├── api/
 │   │   └── v1/endpoints/
-│   │       ├── auth.py              ➞ Prisijungimas / registracija
-│   │       ├── employee.py          ➞ Darbuotojų CRUD
-│   │       └── car.py               ➞ Automobilių CRUD
+│   │       ├── auth.py
+│   │       ├── car.py
+│   │       ├── client.py
+│   │       ├── client_support.py
+│   │       ├── employee.py
+│   │       ├── geocode.py
+│   │       ├── invoice.py
+│   │       ├── order.py
+│   │       └── reservation.py
 │   ├── db/
-│   │   ├── session.py               ➞ DB sesija
-│   │   └── base.py                  ➞ Modelių registracija
-│   ├── models/                      ➞ SQLAlchemy modeliai
+│   │   ├── session.py
+│   │   └── base.py
+│   ├── models/
+│   │   ├── car.py
+│   │   ├── client.py
+│   │   ├── client_support.py
 │   │   ├── employee.py
-│   │   └── car.py
-│   ├── schemas/                     ➞ Pydantic input/output schemos
+│   │   ├── geocode.py
+│   │   ├── invoice.py
+│   │   ├── location.py
+│   │   ├── order.py
+│   │   └── reservation.py
+│   ├── repositories/
+│   │   ├── car.py
+│   │   ├── client.py
+│   │   ├── client_support.py
+│   │   ├── employee.py
+│   │   ├── geocode.py
+│   │   ├── invoice.py
+│   │   ├── order.py
+│   │   └── reservation.py
+│   ├── schemas/
 │   │   ├── auth.py
+│   │   ├── car.py
+│   │   ├── client.py
+│   │   ├── client_support.py
 │   │   ├── employee.py
-│   │   └── car.py
-│   ├── repositories/                ➞ DB logika
-│   │   └── employee.py, car.py
-│   ├── services/                    ➞ Verslo logika
+│   │   ├── geocode.py
+│   │   ├── invoice.py
+│   │   ├── order.py
+│   │   └── reservation.py
+│   ├── services/
 │   │   └── auth_service.py
-│   └── api/deps.py                  ➞ priklausomybių injekcija
-├── init_db.sql                      ➞ Duomenų bazės struktūra + pradiniai duomenys
-├── .env.example                     ➞ Pavyzdinis konfigūracijos failas
+│   ├── utils/
+│   │   └── hateoas.py
+│   └── api/deps.py
+├── init_db.sql
+├── .env.example
 └── requirements.txt
 ```
 
 ---
 
-## 🔐 Autentifikacija
+## 📘 Svarbiausi endpoint’ai
 
-- JWT tokenas generuojamas per `POST /api/v1/auth/login`
-- `get_current_user()` tikrina tokeną visiems apsaugotiems endpointams
+<details>
+<summary><strong>Autentifikacija</strong></summary>
 
-**Endpointai:**
+- `POST   /api/v1/auth/login` – prisijungimas (JWT)
+- `POST   /api/v1/auth/register` – naujo darbuotojo registracija
+- `POST   /api/v1/auth/logout` – atsijungimas (placeholder)
+- `GET    /api/v1/auth/me` – savo profilis
+- `POST   /api/v1/auth/change-password` – keisti slaptažodį
 
-- [`POST /api/v1/auth/login`](http://localhost:8000/docs#/Authentication/login_api_v1_auth_login_post)
-- [`POST /api/v1/auth/register`](http://localhost:8000/docs#/Authentication/register_api_v1_auth_register_post)
-- [`GET /api/v1/auth/me`](http://localhost:8000/docs#/Authentication/me_api_v1_auth_me_get)
+</details>
+
+<details>
+<summary><strong>Darbuotojai</strong></summary>
+
+- `GET    /api/v1/employees/` – visi darbuotojai
+- `GET    /api/v1/employees/{id}` – vienas darbuotojas
+- `POST   /api/v1/employees/` – sukurti naują
+- `PUT    /api/v1/employees/{id}` – atnaujinti
+- `DELETE /api/v1/employees/{id}` – pašalinti
+
+</details>
+
+<details>
+<summary><strong>Klientai</strong></summary>
+
+- `GET    /api/v1/clients/` – visi klientai
+- `GET    /api/v1/clients/{id}` – vienas klientas
+- `POST   /api/v1/clients/` – sukurti naują
+- `PUT    /api/v1/clients/{id}` – atnaujinti
+- `DELETE /api/v1/clients/{id}` – pašalinti
+- `GET    /api/v1/clients/{id}/orders` – kliento užsakymai
+
+</details>
+
+<details>
+<summary><strong>Automobiliai</strong></summary>
+
+- `GET    /api/v1/cars/` – visi automobiliai
+- `GET    /api/v1/cars/{id}` – konkretus automobilis
+- `POST   /api/v1/cars/` – sukurti naują
+- `PUT    /api/v1/cars/{id}` – atnaujinti
+- `PATCH  /api/v1/cars/{id}/status` – keisti būseną
+- `DELETE /api/v1/cars/{id}` – pašalinti
+- `GET    /api/v1/cars/search` – filtravimas
+
+</details>
+
+<details>
+<summary><strong>Užsakymai</strong></summary>
+
+- `GET    /api/v1/orders/` – visi užsakymai
+- `GET    /api/v1/orders/{id}` – vienas užsakymas
+- `POST   /api/v1/orders/` – sukurti naują
+- `PUT    /api/v1/orders/{id}` – atnaujinti
+- `DELETE /api/v1/orders/{id}` – pašalinti
+- `GET    /api/v1/orders/stats/by-status` – statistika pagal būseną
+- `GET    /api/v1/orders/by-client/{kliento_id}` – kliento užsakymai
+
+</details>
+
+<details>
+<summary><strong>Rezervacijos</strong></summary>
+
+- `GET    /api/v1/reservations/` – visos rezervacijos
+- `GET    /api/v1/reservations/latest` – naujausios rezervacijos
+- `GET    /api/v1/reservations/{id}` – viena rezervacija
+- `POST   /api/v1/reservations/` – sukurti naują
+- `PUT    /api/v1/reservations/{id}` – atnaujinti
+- `DELETE /api/v1/reservations/{id}` – pašalinti
+- `GET    /api/v1/reservations/search` – paieška
+
+</details>
+
+<details>
+<summary><strong>Sąskaitos (invoices)</strong></summary>
+
+- `GET    /api/v1/invoices/` – visos sąskaitos
+- `POST   /api/v1/invoices/` – sukurti naują
+- `DELETE /api/v1/invoices/{id}` – pašalinti
+- `PATCH  /api/v1/invoices/{id}/status` – keisti statusą
+
+</details>
+
+<details>
+<summary><strong>Geokodavimas</strong></summary>
+
+- `POST   /api/v1/geocode` – adresas → lat/lng
+
+</details>
+
+<details>
+<summary><strong>Klientų palaikymas</strong></summary>
+
+- `GET    /api/v1/support/` – visos užklausos
+- `POST   /api/v1/support/` – sukurti
+- `GET    /api/v1/support/unanswered` – neatsakytos
+- `GET    /api/v1/support/{id}` – viena užklausa
+- `PATCH  /api/v1/support/{id}` – atsakyti/atnaujinti
+- `DELETE /api/v1/support/{id}` – pašalinti
+
+</details>
 
 ---
 
-## 💼 Darbuotojai
-
-CRUD veiksmai:
-
-- Gauti visus darbuotojus (viešas)
-- Redaguoti / Ištrinti darbuotoją
-
-**Failai:** `schemas/employee.py`, `repositories/employee.py`, `endpoints/employee.py`
-
----
-
-## 🚗 Automobiliai
-
-Pilnas CRUD + būsenos keitimas:
-
-- Pridėti, redaguoti, pašalinti
-- `PATCH /cars/{id}/status`
-
-**Failai:** `schemas/car.py`, `repositories/car.py`, `endpoints/car.py`
-
----
-
-## ⚙️ Projekto paleidimo instrukcija komandai
+## ⚙️ Paleidimo instrukcija
 
 ### 1. Klonavimas ir priklausomybės:
 
 ```bash
-git clone https://github.com/TAVO-VARDAS/autorent_api.git
+git clone https://github.com/gabwowce/autorent_api
 cd autorent_api
 pip install -r requirements.txt
 ```
@@ -211,4 +331,4 @@ app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
 
 ---
 
-📅 README atnaujinta: 2025-04-22
+2026
