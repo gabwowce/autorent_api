@@ -33,6 +33,7 @@
 autorent_api/
 ├── README.md
 ├── requirements.txt
+├── .gitignore
 ├── app/
 │   ├── .env.example
 │   ├── init_db.sql
