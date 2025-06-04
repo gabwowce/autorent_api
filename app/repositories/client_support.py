@@ -1,4 +1,4 @@
-﻿"""
+"""
 app/repositories/client_support.py
 
 Repository functions for ClientSupport entity database operations.

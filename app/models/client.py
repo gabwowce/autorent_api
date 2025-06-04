@@ -40,7 +40,7 @@ class Client(Base):
     telefono_nr = Column(String(20))
     gimimo_data = Column(Date)
     registracijos_data = Column(DateTime, default=datetime.utcnow)
-    bonus_taskai = Column(Integer)
+    bonus_taskai = Column(Integer, default=0, nullable=False)
 
     uzsakymai = relationship("Order", back_populates="klientas")
     uzklausos = relationship("ClientSupport", back_populates="kliento")

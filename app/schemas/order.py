@@ -64,9 +64,9 @@ class OrderUpdate(BaseModel):
 
     Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
     """
-    uzsakymo_busena: Optional[str]
-    grazinimo_data: Optional[date]
-    turi_papildomas_paslaugas: Optional[bool]
+    uzsakymo_busena: Optional[str]  = None
+    grazinimo_data: Optional[date]  = None
+    turi_papildomas_paslaugas: Optional[bool]  = None
 
 class OrderOut(OrderBase):
     """

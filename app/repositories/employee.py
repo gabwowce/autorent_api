@@ -1,4 +1,4 @@
-﻿"""
+"""
 app/repositories/employee.py
 
 Repository functions for Employee entity database operations.

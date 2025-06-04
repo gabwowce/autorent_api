@@ -1,9 +1,23 @@
+﻿"""
+app/api/v1/endpoints/invoice.py
+
+API endpoints for invoice management.
+
+Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+
+Description:
+    Implements RESTful API routes for invoice CRUD operations and status updates.
+    All endpoints return data with HATEOAS links for easier frontend navigation.
+"""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.schemas.invoice import InvoiceCreate, InvoiceStatusUpdate, InvoiceOut
 from app.repositories import invoice as crud_invoice
 from utils.hateoas import generate_links
+from app.models.order import Order
+from app.models import client as klientas_model
+
 
 router = APIRouter(
     prefix="/invoices",
@@ -11,6 +25,17 @@ router = APIRouter(
 )
 
 def generate_invoice_links(invoice) -> list[dict]:
+    """
+    Build HATEOAS links for an invoice.
+
+    Args:
+        invoice (Invoice or dict): Invoice instance or dict.
+
+    Returns:
+        list[dict]: List of navigation links.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
     get = lambda obj, key: obj.get(key) if isinstance(obj, dict) else getattr(obj, key)
     return [
         {"rel": "self", "href": f"/invoices/{get(invoice, 'saskaitos_id')}"},
@@ -22,7 +47,18 @@ def generate_invoice_links(invoice) -> list[dict]:
 
 @router.get("/", response_model=list[InvoiceOut], operation_id="getAllInvoices")
 def get_all_invoices(db: Session = Depends(get_db)):
-    raw_data = crud_invoice.get_invoice(db)  # tai yra sąrašas dict'ų
+    """
+    Retrieve all invoices.
+
+    Args:
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        list[InvoiceOut]: List of invoices with HATEOAS links.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
+    raw_data = crud_invoice.get_invoice(db)
     return [
         {
             **invoice,
@@ -33,14 +69,53 @@ def get_all_invoices(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=InvoiceOut, operation_id="createInvoice")
 def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
-    created = crud_invoice.create_invoice(db, invoice)  # ORM objektas
+    """
+    Create a new invoice.
+
+    Args:
+        invoice (InvoiceCreate): Invoice creation schema.
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        InvoiceOut: Created invoice with HATEOAS links.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
+    created = crud_invoice.create_invoice(db, invoice)
+
+    # Rask order ir klientą (nes reikia status, client_first_name, client_last_name)
+    order = db.query(Order).filter(Order.uzsakymo_id == created.uzsakymo_id).first()
+    client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
+
     return {
-        **created.__dict__,
-        "links": generate_invoice_links(created.__dict__)  # čia jau reikia dict
+        "invoice_id": created.saskaitos_id,
+        "order_id": created.uzsakymo_id,
+        "kliento_id": order.kliento_id,
+        "total": created.suma,
+        "invoice_date": str(created.saskaitos_data),  # jei reikia, paversk į str
+        "status": order.uzsakymo_busena,
+        "client_first_name": client.vardas,
+        "client_last_name": client.pavarde,
+        "links": generate_invoice_links(created)
     }
 
 @router.delete("/{invoice_id}", operation_id="deleteInvoice")
 def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
+    """
+    Delete an invoice by ID.
+
+    Args:
+        invoice_id (int): Invoice identifier.
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        dict: Confirmation message.
+
+    Raises:
+        HTTPException: If invoice is not found.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
     success = crud_invoice.delete_invoice(db, invoice_id)
     if not success:
         raise HTTPException(status_code=404, detail="Invoice not found")
@@ -48,10 +123,35 @@ def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
 
 @router.patch("/{invoice_id}/status", response_model=InvoiceOut, operation_id="updateStatus")
 def update_status(invoice_id: int, status: InvoiceStatusUpdate, db: Session = Depends(get_db)):
+    """
+    Update the status of an invoice.
+
+    Args:
+        invoice_id (int): Invoice identifier.
+        status (InvoiceStatusUpdate): New status payload.
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        InvoiceOut: Updated invoice with HATEOAS links.
+
+    Raises:
+        HTTPException: If invoice is not found.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
     updated = crud_invoice.update_invoice_status(db, invoice_id, status)
     if not updated:
         raise HTTPException(status_code=404, detail="Invoice not found")
+    order = db.query(Order).filter(Order.uzsakymo_id == updated.uzsakymo_id).first()
+    client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
     return {
-        **updated.__dict__,
-        "links": generate_invoice_links(updated.__dict__)
+        "invoice_id": updated.saskaitos_id,
+        "order_id": updated.uzsakymo_id,
+        "kliento_id": order.kliento_id,
+        "total": updated.suma,
+        "invoice_date": str(updated.saskaitos_data),
+        "status": order.uzsakymo_busena,
+        "client_first_name": client.vardas,
+        "client_last_name": client.pavarde,
+        "links": generate_invoice_links(updated)
     }

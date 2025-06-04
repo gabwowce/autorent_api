@@ -1,24 +1,26 @@
 """
 app/schemas/location.py
 
-Pydantic schema for returning location (delivery point) data.
+Pydantic schema for representing a location object.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Defines the structure used when returning location details in API responses.
+    Defines the response model for location data returned by the API.
 """
 from pydantic import BaseModel
 
 class LocationOut(BaseModel):
     """
-    Schema representing a delivery/pickup location.
+    Response schema for location data.
 
-    Fields:
-        vietos_id (int): Unique location ID.
-        pavadinimas (str): Location name.
-        adresas (str): Full address.
-        miestas (str): City name.
+    Attributes:
+        vietos_id (int): Unique identifier for the location.
+        pavadinimas (str): Name of the location.
+        adresas (str): Address of the location.
+        miestas (str): City where the location is situated.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     vietos_id: int
     pavadinimas: str

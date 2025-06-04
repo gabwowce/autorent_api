@@ -3,29 +3,37 @@ app/schemas/geocode.py
 
 Pydantic schemas for geocoding requests and responses.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Defines the request and response structure for the geocoding endpoint.
+    This module defines request and response schemas for geocoding API endpoints,
+    allowing address-to-coordinates conversion and vice versa.
+
+Usage:
+    from schemas.geocode import GeocodeRequest, GeocodeResponse
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class GeocodeRequest(BaseModel):
     """
-    Schema for geocoding request.
+    Request schema for geocoding (address-to-coordinates) operation.
 
-    Fields:
-        adresas (str): Address to convert into geographic coordinates.
+    Attributes:
+        adresas (str): The address to geocode.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
-    adresas: str
+    adresas: str = Field(..., min_length=1)
 
 class GeocodeResponse(BaseModel):
     """
-    Schema for geocoding response.
+    Response schema for geocoding operation.
 
-    Fields:
-        lat (float): Latitude.
-        lng (float): Longitude.
+    Attributes:
+        lat (float): Latitude coordinate.
+        lng (float): Longitude coordinate.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     lat: float
     lng: float

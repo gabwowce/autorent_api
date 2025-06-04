@@ -69,6 +69,38 @@ def get_client(kliento_id: int, db: Session = Depends(get_db)):
         "links": generate_links("clients", client.kliento_id, ["update", "delete"])
     }
 
+@router.put(
+    "/{kliento_id}",
+    response_model=schemas_client.ClientOut,
+    operation_id="updateClient",
+)
+def update_client(
+    kliento_id: int,
+    client_update: schemas_client.ClientUpdate,
+    db: Session = Depends(get_db),
+):
+    """
+    Atnaujinti klientą (dalinis PUT).
+
+    Leidžia siųsti **tik pakeistus** laukus.
+    """
+    client = repo.get_by_id(db, kliento_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    # atributai iš pydantic schemos
+    for field, value in client_update.dict(exclude_unset=True).items():
+        setattr(client, field, value)
+
+    db.commit()
+    db.refresh(client)
+
+    return {
+        **client.__dict__,
+        "links": generate_links("clients", client.kliento_id, ["update", "delete"]),
+    }
+
+
 @router.post("/", response_model=schemas_client.ClientOut, operation_id="createClient")
 def create_client(client: schemas_client.ClientCreate, db: Session = Depends(get_db)):
     """
