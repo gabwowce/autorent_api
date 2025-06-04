@@ -325,10 +325,4 @@ app.include_router(orders.router, prefix="/api/v1/orders", tags=["Orders"])
 
 ---
 
-✅ Jei viską padarei teisingai – paleisi API su testiniais duomenimis.
-
-🛠️ Reikia pagalbos? Susisiek su projekto architektu.
-
----
-
 2025
