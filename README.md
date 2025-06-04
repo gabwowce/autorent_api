@@ -24,19 +24,6 @@
 | Geokodavimas       | `/geocode`          | Adreso konvertavimas į koordinates |
 | Klientų palaikymas | `/support`          | Pagalbos užklausos             |
 
----
-
-## Architektūra
-
-```
-[ FastAPI endpoints ]
-        │
-        ▼
-[ Schemos (input/output) ] ➞ [ Repozitorijos (CRUD) ] ➞ [ Paslaugos (verslo logika, JWT, hash) ]
-        │
-        ▼
- [ DB Modeliai (SQLAlchemy) ]
-```
 
 ---
 
