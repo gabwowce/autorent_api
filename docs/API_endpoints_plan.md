@@ -2,116 +2,124 @@
 
 Projektas: **Automobilių nuomos sistema**
 
-Šis dokumentas nurodo visus suplanuotus REST API endpointus, kurie bus naudojami projektuojant ir kuriant sistemą. Endpointai suskirstyti pagal logines sekcijas.
+Šis dokumentas aprašo visus realiai įgyvendintus REST API endpointus, kurie naudojami sistemoje. Visi endpointai suskirstyti pagal logines sekcijas.
 
 ---
 
 ## 🔐 1. Autentifikacija (`/auth`)
 
-| Endpoint    | Metodas | Aprašymas                                       |
-| ----------- | ------- | ----------------------------------------------- |
-| `/login`    | POST    | Prisijungimas, grąžina JWT                      |
-| `/logout`   | POST    | Atsijungimas (tokenas šalinamas kliento pusėje) |
-| `/register` | POST    | Darbuotojo registracija (admin)                 |
-| `/me`       | GET     | Prisijungusio darbuotojo info                   |
+| Endpoint           | Metodas | Aprašymas                                   |
+|--------------------|---------|---------------------------------------------|
+| `/login`           | POST    | Prisijungimas, grąžina JWT                  |
+| `/logout`          | POST    | Atsijungimas (tokenas šalinamas kliento pusėje) |
+| `/register`        | POST    | Darbuotojo registracija                     |
+| `/me`              | GET     | Prisijungusio darbuotojo info               |
+| `/change-password` | POST    | Pakeisti slaptažodį                         |
 
 ---
 
 ## 👨‍💼 2. Darbuotojai (`/employees`)
 
-| Endpoint | Metodas | Aprašymas                                  |
-| -------- | ------- | ------------------------------------------ |
-| `/`      | GET     | Gauti visus darbuotojus                    |
-| `/{id}`  | GET     | Gauti vieną darbuotoją pagal ID            |
-| `/{id}`  | PUT     | Atnaujinti darbuotojo info (role, tel. nr) |
-| `/{id}`  | DELETE  | Pašalinti darbuotoją                       |
+| Endpoint  | Metodas | Aprašymas                          |
+|-----------|---------|------------------------------------|
+| `/`       | GET     | Gauti visus darbuotojus            |
+| `/{id}`   | GET     | Gauti vieną darbuotoją pagal ID    |
+| `/`       | POST    | Sukurti naują darbuotoją           |
+| `/{id}`   | PUT     | Atnaujinti darbuotojo info         |
+| `/{id}`   | DELETE  | Pašalinti darbuotoją               |
 
 ---
 
-## 🚗 3. Automobiliai (`/cars`)
+## 👤 3. Klientai (`/clients`)
 
-| Endpoint       | Metodas | Aprašymas                       |
-| -------------- | ------- | ------------------------------- |
-| `/`            | GET     | Gauti visus automobilius        |
-| `/{id}`        | GET     | Vienas automobilis pagal ID     |
-| `/`            | POST    | Pridėti naują automobilį        |
-| `/{id}`        | PUT     | Atnaujinti automobilio duomenis |
-| `/{id}`        | DELETE  | Pašalinti automobilį            |
-| `/{id}/status` | PATCH   | Pakeisti automobilio būseną     |
-
----
-
-## 💼 4. Užsakymai (`/orders`)
-
-| Endpoint | Metodas | Aprašymas           |
-| -------- | ------- | ------------------- |
-| `/`      | GET     | Visi užsakymai      |
-| `/{id}`  | GET     | Vienas užsakymas    |
-| `/`      | POST    | Naujas užsakymas    |
-| `/{id}`  | PUT     | Atnaujinti užsakymą |
-| `/{id}`  | DELETE  | Atšaukti užsakymą   |
+| Endpoint            | Metodas | Aprašymas                                |
+|---------------------|---------|------------------------------------------|
+| `/`                 | GET     | Gauti visus klientus                     |
+| `/{id}`             | GET     | Gauti vieną klientą pagal ID             |
+| `/`                 | POST    | Sukurti naują klientą                    |
+| `/{id}`             | PUT     | Atnaujinti kliento info                  |
+| `/{id}`             | DELETE  | Pašalinti klientą                        |
+| `/{id}/orders`      | GET     | Kliento užsakymai                        |
 
 ---
 
-## 📃 5. Sąskaitos ir mokėjimai (`/invoices`, `/payments`)
+## 🚗 4. Automobiliai (`/cars`)
 
-| Endpoint     | Metodas | Aprašymas        |
-| ------------ | ------- | ---------------- |
-| `/invoices/` | GET     | Visos sąskaitos  |
-| `/payments/` | GET     | Visi mokėjimai   |
-| `/payments/` | POST    | Naujas mokėjimas |
-
----
-
-## 💬 6. Klientų palaikymas (`/support`)
-
-| Endpoint      | Metodas | Aprašymas               |
-| ------------- | ------- | ----------------------- |
-| `/`           | GET     | Visos klientų užklausos |
-| `/`           | POST    | Nauja užklausa          |
-| `/{id}/reply` | PUT     | Atsakyti į užklausą     |
+| Endpoint         | Metodas | Aprašymas                       |
+|------------------|---------|---------------------------------|
+| `/`              | GET     | Gauti visus automobilius        |
+| `/{id}`          | GET     | Vienas automobilis pagal ID     |
+| `/`              | POST    | Pridėti naują automobilį        |
+| `/{id}`          | PUT     | Atnaujinti automobilio duomenis |
+| `/{id}`          | DELETE  | Pašalinti automobilį            |
+| `/{id}/status`   | PATCH   | Pakeisti automobilio būseną     |
+| `/search`        | GET     | Paieška/filtravimas pagal laukus|
 
 ---
 
-## ⭐ 7. Atsiliepimai (`/reviews`)
+## 💼 5. Užsakymai (`/orders`)
 
-| Endpoint | Metodas | Aprašymas            |
-| -------- | ------- | -------------------- |
-| `/`      | GET     | Visi atsiliepimai    |
-| `/`      | POST    | Naujas atsiliepimas  |
-| `/{id}`  | DELETE  | Ištrinti atsiliepimą |
-
----
-
-## ⚙️ 8. Servisas ir remontas (`/service`, `/repair`)
-
-| Endpoint    | Metodas | Aprašymas             |
-| ----------- | ------- | --------------------- |
-| `/service/` | GET     | Serviso įrašai        |
-| `/service/` | POST    | Naujas serviso įrašas |
-| `/repair/`  | GET     | Remonto įrašai        |
-| `/repair/`  | POST    | Naujas remonto įrašas |
+| Endpoint                   | Metodas | Aprašymas                      |
+|----------------------------|---------|--------------------------------|
+| `/`                        | GET     | Visi užsakymai                 |
+| `/{id}`                    | GET     | Vienas užsakymas               |
+| `/`                        | POST    | Naujas užsakymas               |
+| `/{id}`                    | PUT     | Atnaujinti užsakymą            |
+| `/{id}`                    | DELETE  | Ištrinti/atšaukti užsakymą     |
+| `/by-client/{kliento_id}`  | GET     | Visi kliento užsakymai         |
+| `/stats/by-status`         | GET     | Užsakymų statistika pagal būseną |
 
 ---
 
-## 🚊 9. Rezervacijos (`/reservations`)
+## 📑 6. Sąskaitos (`/invoices`)
 
-| Endpoint | Metodas | Aprašymas              |
-| -------- | ------- | ---------------------- |
-| `/`      | GET     | Visos rezervacijos     |
-| `/`      | POST    | Nauja rezervacija      |
-| `/{id}`  | PUT     | Atnaujinti rezervaciją |
-| `/{id}`  | DELETE  | Atšaukti rezervaciją   |
+| Endpoint              | Metodas | Aprašymas                       |
+|-----------------------|---------|---------------------------------|
+| `/`                   | GET     | Visos sąskaitos                 |
+| `/`                   | POST    | Nauja sąskaita                  |
+| `/{id}`               | DELETE  | Pašalinti sąskaitą              |
+| `/{id}/status`        | PATCH   | Pakeisti sąskaitos statusą      |
+
+---
+
+## 💬 7. Klientų palaikymas (`/support`)
+
+| Endpoint              | Metodas | Aprašymas                             |
+|-----------------------|---------|---------------------------------------|
+| `/`                   | GET     | Visos klientų užklausos               |
+| `/`                   | POST    | Nauja užklausa                        |
+| `/unanswered`         | GET     | Neatsakytos užklausos                 |
+| `/{id}`               | GET     | Viena užklausa                        |
+| `/{id}`               | PATCH   | Atsakyti/atnaujinti užklausą          |
+| `/{id}`               | DELETE  | Pašalinti užklausą                    |
 
 ---
 
-## 💲 10. Paslaugos, nuolaidos, bonusai
+## 🚊 8. Rezervacijos (`/reservations`)
 
-| Endpoint       | Metodas  | Aprašymas               |
-| -------------- | -------- | ----------------------- |
-| `/services/`   | GET/POST | Papildomų paslaugų CRUD |
-| `/discounts/`  | GET/POST | Nuolaidų valdymas       |
-| `/bonuses/`    | GET      | Kliento bonusų peržiūra |
-| `/bonuses/use` | POST     | Naudoti bonusus         |
+| Endpoint         | Metodas | Aprašymas                          |
+|------------------|---------|------------------------------------|
+| `/`              | GET     | Visos rezervacijos                 |
+| `/latest`        | GET     | Naujausios rezervacijos            |
+| `/{id}`          | GET     | Viena rezervacija pagal ID         |
+| `/`              | POST    | Nauja rezervacija                  |
+| `/{id}`          | PUT     | Atnaujinti rezervaciją             |
+| `/{id}`          | DELETE  | Ištrinti rezervaciją               |
+| `/search`        | GET     | Paieška pagal filtrus              |
 
 ---
+
+## 🗺️ 9. Geokodavimas (`/geocode`)
+
+| Endpoint    | Metodas | Aprašymas                                  |
+|-------------|---------|--------------------------------------------|
+| `/geocode`  | POST    | Adreso geokodavimas (lat/lng pagal adresą) |
+
+---
+
+**PASTABA:**  
+- Visi endpoint’ai grąžina duomenis su HATEOAS nuorodomis.  
+- Visi svarbiausi veiksmai testuoti su Swagger bei Postman.
+
+---
+
