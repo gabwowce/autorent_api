@@ -50,3 +50,4 @@ class Order(Base):
     # Santykiai
     saskaita = relationship("Invoice", back_populates="uzsakymas", uselist=False)
     klientas = relationship("Client", back_populates="uzsakymai")
+

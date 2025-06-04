@@ -1,25 +1,86 @@
 """
 app/schemas/car.py
 
-Pydantic schemas for car-related data validation and serialization.
+Pydantic schemas for car-related operations in the Car Rental API.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Contains schemas for creating, updating, and returning car data,
-    including optional location info and HATEOAS links.
+    Provides data models for car base attributes, creation, update, output, and status changes.
+    Used for API request validation, response serialization, and OpenAPI documentation.
 """
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import date
 
 from app.schemas.location import LocationOut
 
-# 1️⃣ Bendras pagrindas visoms schemoms
 class CarBase(BaseModel):
     """
-    Common fields shared by all car schemas.
-    All fields are optional for reuse flexibility.
+    Base schema for car attributes (common to all car operations).
+
+    Fields:
+        marke (str): Car brand.
+        modelis (str): Car model.
+        metai (int): Year of manufacture.
+        numeris (str): License plate number.
+        vin_kodas (str): VIN code.
+        spalva (str): Color.
+        kebulo_tipas (str): Body type.
+        pavarų_deze (str): Gearbox type.
+        variklio_turis (float): Engine capacity (L).
+        galia_kw (int): Engine power (kW).
+        kuro_tipas (str): Fuel type.
+        rida (int): Odometer reading (km).
+        sedimos_vietos (int): Number of seats.
+        klimato_kontrole (bool): Has climate control.
+        navigacija (bool): Has navigation.
+        kaina_parai (float): Price per day.
+        automobilio_statusas (str): Car status (e.g., 'laisvas').
+        technikines_galiojimas (date): Technical inspection expiry.
+        dabartine_vieta_id (int): Current location ID.
+        pastabos (Optional[str]): Additional notes.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
+    """
+    marke: str
+    modelis: str
+    metai: int
+    numeris: str
+    vin_kodas: str
+    spalva: str
+    kebulo_tipas: str
+    pavarų_deze: str
+    variklio_turis: float
+    galia_kw: int
+    kuro_tipas: str
+    rida: int
+    sedimos_vietos: int
+    klimato_kontrole: bool
+    navigacija: bool
+    kaina_parai: float
+    automobilio_statusas: str
+    technikines_galiojimas: date
+    dabartine_vieta_id: int
+    pastabos: Optional[str]
+
+class CarCreate(CarBase):
+    """
+    Schema for car creation (POST requests).
+
+    Inherits all fields from CarBase.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
+    """
+    pass
+
+class CarUpdate(BaseModel):
+    """
+    Schema for car update (PUT/PATCH requests).
+
+    All fields optional to allow partial updates.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     marke: Optional[str] = None
     modelis: Optional[str] = None
@@ -42,45 +103,36 @@ class CarBase(BaseModel):
     dabartine_vieta_id: Optional[int] = None
     pastabos: Optional[str] = None
 
-# 2️⃣ Kūrimo schema (naudojama POST metu)
-class CarCreate(CarBase):
-    """
-    Schema for creating a new car.
-
-    Inherits all fields from CarBase.
-    """
-    pass
-
-# 3️⃣ Atnaujinimo schema (naudojama PUT/PATCH metu)
-class CarUpdate(CarBase):
-    """
-    Schema for updating an existing car.
-
-    All fields are optional, partial updates supported.
-    """
-    pass
+    class Config:
+        orm_mode = True
 
 class CarOut(CarBase):
     """
-    Schema used when returning car data to the client.
+    Schema for car output (response model).
 
     Fields:
-        automobilio_id (int): Unique car ID.
-        lokacija (LocationOut | None): Optional location info.
-        links (list[dict]): HATEOAS-style navigation links.
+        automobilio_id (int): Car unique identifier.
+        lokacija (Optional[LocationOut]): Detailed location info.
+        links (List[dict]): HATEOAS links for related actions.
+
+    Inherits all fields from CarBase.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     automobilio_id: int
     lokacija: Optional[LocationOut]
-    links: List[dict]
+    links: List[Dict]
 
     class Config:
         orm_mode = True
 
 class CarStatusUpdate(BaseModel):
     """
-    Schema used to update only the status of a car.
+    Schema for car status update requests.
 
     Fields:
         status (str): New car status.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     status: str

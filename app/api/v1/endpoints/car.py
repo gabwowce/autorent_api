@@ -15,6 +15,11 @@ from typing import Optional, List
 
 from app.api.deps import get_db
 from app.models.car import Car
+from sqlalchemy.orm import Session, joinedload
+from typing import Optional, List
+
+from app.api.deps import get_db
+from app.models.car import Car
 from app.schemas.car import CarOut, CarCreate, CarUpdate, CarStatusUpdate
 from utils.hateoas import generate_links
 
@@ -208,6 +213,8 @@ def delete_car(car_id: int, db: Session = Depends(get_db)):
     car = db.query(Car).filter(Car.automobilio_id == car_id).first()
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
+    db.delete(car)
+    db.commit()
     db.delete(car)
     db.commit()
     return {"message": "Car deleted successfully"}

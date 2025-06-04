@@ -1,4 +1,4 @@
-﻿"""
+"""
 app/models/employee.py
 
 SQLAlchemy Employee model for the 'darbuotojai' table.
@@ -43,3 +43,4 @@ class Employee(Base):
     slaptazodis = Column(String(255))
 
     uzklausos = relationship("ClientSupport", back_populates="darbuotojas")
+

@@ -28,13 +28,13 @@ class ClientBase(BaseModel):
 
     Author: Ivan Bruner <ivan.bruner@stud.viko.lt>
     """
-    vardas: str
-    pavarde: str
+    vardas: str = None
+    pavarde: str = None
     el_pastas: EmailStr
-    telefono_nr: str
-    gimimo_data: date
-    registracijos_data: datetime
-    bonus_taskai: int
+    telefono_nr: str = None
+    gimimo_data: date = None
+    registracijos_data: datetime = None
+    bonus_taskai: int = 0
 
 class ClientCreate(ClientBase):
     """
@@ -69,6 +69,7 @@ class ClientOut(ClientBase):
     Author: Ivan Bruner <ivan.bruner@stud.viko.lt>
     """
     kliento_id: int
+    bonus_taskai: int = 0
     links: List[Dict]
 
     class Config:

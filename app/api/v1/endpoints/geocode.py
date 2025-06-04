@@ -1,38 +1,38 @@
 """
 app/api/v1/endpoints/geocode.py
 
-API endpoint for converting address to geographic coordinates (geocoding).
+API endpoint for geocoding address requests.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Provides an endpoint to retrieve latitude and longitude from an address string.
-    Uses asynchronous geocoding logic and returns structured response.
+    Implements an endpoint for geocoding addresses into latitude and longitude using an external geocoding service.
+    Receives an address in the request body and returns coordinates as a response.
+
+Usage:
+    Register this router with the main FastAPI app to enable /api/geocode POST endpoint.
 """
 from fastapi import APIRouter, HTTPException
 from app.schemas.geocode import GeocodeRequest, GeocodeResponse
 from app.repositories.geocode import geocode_address
 
-router = APIRouter(
-    prefix="/api",
-    tags=["Geo Code"]
-)
+router = APIRouter(tags=["Geo Code"])
 
 @router.post("/geocode", response_model=GeocodeResponse, operation_id="geoCode")
 async def geocode(req: GeocodeRequest):
     """
-    Convert an address to geographic coordinates (latitude, longitude).
+    Convert an address to latitude and longitude coordinates.
 
     Args:
-        req (GeocodeRequest): Request containing the address.
+        req (GeocodeRequest): Request body containing the address string.
 
     Returns:
-        GeocodeResponse: Latitude and longitude coordinates.
+        GeocodeResponse: The latitude and longitude if found.
 
     Raises:
-        HTTPException: If coordinates not found for given address.
+        HTTPException: If coordinates are not found for the provided address.
 
-    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     coords = await geocode_address(req.adresas)
 

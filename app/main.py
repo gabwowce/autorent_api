@@ -13,7 +13,7 @@ Description:
     Initializes the FastAPI app, loads environment variables,
     sets up SQLAlchemy models, configures CORS, and registers all API routers
     for authentication, employees, cars, reservations, orders, clients, client support,
-    invoices, weather, and geocoding endpoints.
+    invoices and geocoding endpoints.
 
 Usage:
     Run the application with:
@@ -25,7 +25,7 @@ Note:
     - Environment variables are loaded from a .env file.
 """
 from fastapi import FastAPI
-from app.api.v1.endpoints import auth, employee, car, reservation, order, geocode, client, client_support, invoice, weather
+from app.api.v1.endpoints import auth, employee, car, reservation, order, geocode, client, client_support, invoice
 from app.db.base import Base
 from app.db.session import engine
 from dotenv import load_dotenv
@@ -56,5 +56,4 @@ app.include_router(order.router, prefix="/api/v1", tags=["Order"])
 app.include_router(client.router, prefix="/api/v1", tags=["Client"])
 app.include_router(client_support.router, prefix="/api/v1", tags=["Client Support"])
 app.include_router(invoice.router, prefix="/api/v1", tags=["Invoices"])
-app.include_router(weather.router, prefix="/api/v1", tags=["Weather"])
 app.include_router(geocode.router,  prefix="/api/v1", tags=["Geo Code"])

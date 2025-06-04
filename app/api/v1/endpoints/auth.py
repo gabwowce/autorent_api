@@ -1,16 +1,16 @@
 """
 app/api/v1/endpoints/auth.py
 
-API endpoints for authentication and employee account management.
+Authentication endpoints for employee login, registration, and profile actions.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Implements RESTful API routes for authentication:
-    login, register, logout, retrieve current user, and change password.
-    Token-based authentication is used, with support for secure cookies.
+    Defines REST API endpoints for user authentication, registration, 
+    password change, and profile retrieval for employees in the car rental system.
+    Uses JWT for authentication and integrates with employee repository and authentication services.
 """
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.auth import LoginRequest, TokenResponse, RegisterRequest, UserInfo, ChangePasswordRequest
 from app.db.session import SessionLocal
@@ -24,22 +24,21 @@ router = APIRouter(
 )
 
 @router.post("/login", response_model=TokenResponse, operation_id="login")
-def login(request: LoginRequest, response: Response, db: Session = Depends(get_db)):
+def login(request: LoginRequest, db: Session = Depends(get_db)):
     """
-    Authenticate user and return JWT token.
+    Handle employee login. Validates credentials and returns a JWT token.
 
     Args:
-        request (LoginRequest): Login data (email and password).
-        response (Response): HTTP response to set cookie.
-        db (Session): SQLAlchemy session.
+        request (LoginRequest): Login data with email and password.
+        db (Session): Database session.
 
     Returns:
-        TokenResponse: Access token if credentials are valid.
+        TokenResponse: Access token if login is successful.
 
     Raises:
         HTTPException: If credentials are invalid.
 
-    Author: Tavo Vardas <tavo.el.pastas@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     db_user = employee_repo.get_by_email(db, request.el_pastas)
     if not db_user or not verify_password(request.slaptazodis, db_user.slaptazodis):
@@ -61,19 +60,19 @@ def login(request: LoginRequest, response: Response, db: Session = Depends(get_d
 @router.post("/register", operation_id="register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     """
-    Register a new employee.
+    Register a new employee. Checks for duplicates and hashes the password.
 
     Args:
         request (RegisterRequest): Registration data.
-        db (Session): SQLAlchemy session.
+        db (Session): Database session.
 
     Returns:
-        dict: Success message and new employee ID.
+        dict: Message and created employee ID.
 
     Raises:
-        HTTPException: If email is already registered.
+        HTTPException: If user with the same email already exists.
 
-    Author: Tavo Vardas <tavo.el.pastas@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     existing = employee_repo.get_by_email(db, request.el_pastas)
     if existing:
@@ -88,27 +87,27 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/logout", operation_id="logout")
 def logout():
     """
-    Logout current user (stateless operation).
+    Logout endpoint placeholder.
 
     Returns:
-        dict: Logout confirmation message.
+        dict: Message confirming logout.
 
-    Author: Tavo Vardas <tavo.el.pastas@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     return {"message": "Successfully logged out"}
 
 @router.get("/me", response_model=UserInfo)
 def me(current_user = Depends(get_current_user)):
     """
-    Get current logged-in user info.
+    Get current authenticated employee's profile.
 
     Args:
-        current_user: Injected current user from token.
+        current_user: Employee from authentication dependency.
 
     Returns:
-        UserInfo: Current user's information.
+        UserInfo: Employee profile data.
 
-    Author: Tavo Vardas <tavo.el.pastas@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     return current_user
 
@@ -119,20 +118,20 @@ def change_password(
     current_user = Depends(get_current_user)
 ):
     """
-    Change password for current user.
+    Change the current employee's password after validating the old one.
 
     Args:
-        request (ChangePasswordRequest): Current and new password.
-        db (Session): SQLAlchemy session.
-        current_user: Injected current user from token.
+        request (ChangePasswordRequest): Password change request data.
+        db (Session): Database session.
+        current_user: Authenticated employee.
 
     Returns:
-        dict: Password change confirmation message.
+        dict: Message confirming password change.
 
     Raises:
         HTTPException: If current password is incorrect.
 
-    Author: Tavo Vardas <tavo.el.pastas@stud.viko.lt>
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     user = employee_repo.get_by_email(db, current_user.el_pastas)
     if not verify_password(request.senas_slaptazodis, user.slaptazodis):

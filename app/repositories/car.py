@@ -12,6 +12,7 @@ Description:
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.car import Car
+from sqlalchemy import func
 
 def get_all(db: Session):
     """

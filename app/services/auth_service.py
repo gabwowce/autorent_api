@@ -1,15 +1,15 @@
 """
 app/services/auth_service.py
 
-Utilities for authentication: password hashing and JWT token generation.
+Utility functions for password hashing and JWT token generation.
 
-Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
 
 Description:
-    Provides helper functions for:
-    - Verifying and hashing passwords using bcrypt.
-    - Creating access tokens (JWT) with expiration.
+    Contains helper functions for verifying and hashing passwords using passlib,
+    and creating access tokens using JOSE JWT for authentication purposes.
 """
+
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
@@ -23,39 +23,46 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
     """
-    Patikrina ar įvestas slaptažodis sutampa su išsaugotu maišu.
+    Verify a plain password against its hashed version.
 
     Args:
-        plain_password (str): Nešifruotas slaptažodis.
-        hashed_password (str): Maišuotas slaptažodis.
+        plain_password (str): The plain text password provided by the user.
+        hashed_password (str): The hashed password stored in the database.
 
     Returns:
-        bool: True, jei slaptažodžiai sutampa.
+        bool: True if the password matches the hash, False otherwise.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
     """
-    Sugeneruoja maišą iš pateikto slaptažodžio.
+    Hash a plain password using bcrypt.
 
     Args:
-        password (str): Nešifruotas slaptažodis.
+        password (str): The plain text password to hash.
 
     Returns:
-        str: Maišuotas slaptažodis.
+        str: The hashed password.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     """
-    Sukuria JWT tokeną su galiojimo laiku.
+    Generate a JWT access token with expiration.
 
     Args:
-        data (dict): Duomenys, kurie bus įdėti į tokeną.
-        expires_delta (timedelta, optional): Tokeno galiojimo trukmė.
+        data (dict): The data to encode inside the token.
+        expires_delta (timedelta, optional): The token's expiration period.
+            If not provided, defaults to ACCESS_TOKEN_EXPIRE_MINUTES.
 
     Returns:
-        str: Užkoduotas JWT tokenas.
+        str: The encoded JWT token.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciute@stud.viko.lt>
     """
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
