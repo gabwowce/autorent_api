@@ -18,7 +18,7 @@ Notes:
 """
 
 import pytest
-from app.utils.hateoas import generate_links
+from utils.hateoas import generate_links
 
 def test_generate_basic_links():
     """
