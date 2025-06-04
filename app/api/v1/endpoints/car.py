@@ -215,8 +215,6 @@ def delete_car(car_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Car not found")
     db.delete(car)
     db.commit()
-    db.delete(car)
-    db.commit()
     return {"message": "Car deleted successfully"}
 
 @router.get("/search", response_model=List[CarOut], operation_id="searchCars")
