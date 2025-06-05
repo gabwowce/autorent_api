@@ -9,9 +9,10 @@ Description:
     Contains data models for order creation, update, and output in the API,
     including support for HATEOAS links.
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from datetime import date
 from typing import List, Dict, Optional
+from decimal import Decimal
 
 class OrderBase(BaseModel):
     """
@@ -38,7 +39,7 @@ class OrderBase(BaseModel):
     grazinimo_data: date
     paemimo_vietos_id: int
     grazinimo_vietos_id: int
-    bendra_kaina: int
+    bendra_kaina: float
     uzsakymo_busena: str
     turi_papildomas_paslaugas: bool
 
@@ -86,4 +87,4 @@ class OrderOut(OrderBase):
     links: List[Dict]
 
     class Config:
-        orm_mode = True
+        from_attributes = True

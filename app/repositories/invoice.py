@@ -1,4 +1,4 @@
-"""
+﻿"""
 app/repositories/invoice.py
 
 Repository functions for Invoice entity database operations.
@@ -13,6 +13,7 @@ from app.models.invoice import Invoice
 from app.models.order import Order
 from app.models import client as klientas_model
 from app.schemas.invoice import InvoiceCreate, InvoiceStatusUpdate
+from datetime import datetime
 
 def get_invoice(db: Session):
     """
@@ -43,7 +44,14 @@ def get_invoice(db: Session):
 
     results = query.all()
     keys = [col['name'] for col in query.column_descriptions]
-    return [dict(zip(keys, row)) for row in results]
+    invoices = []
+    for row in results:
+        d = dict(zip(keys, row))
+        # Paversk jei reikia
+        if isinstance(d["invoice_date"], datetime):
+            d["invoice_date"] = d["invoice_date"].date()
+        invoices.append(d)
+    return invoices
 
 
 
@@ -110,8 +118,11 @@ def update_invoice_status(db: Session, invoice_id: int, status_data: InvoiceStat
     """
     invoice = db.query(Invoice).filter(Invoice.saskaitos_id == invoice_id).first()
     if invoice:
-        invoice.status = status_data.status
-        db.commit()
+        order = db.query(Order).filter(Order.uzsakymo_id == invoice.uzsakymo_id).first()
+        if order:
+            order.uzsakymo_busena = status_data.status
+            db.commit()
+            db.refresh(order)
         db.refresh(invoice)
         return invoice
     return None
