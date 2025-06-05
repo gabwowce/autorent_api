@@ -58,6 +58,69 @@ def get_all_cars(db: Session = Depends(get_db)):
         for car in cars
     ]
 
+@router.get("/search", response_model=List[CarOut], operation_id="searchCars")
+def search_cars(
+    db: Session = Depends(get_db),
+    marke: Optional[str] = None,
+    modelis: Optional[str] = None,
+    spalva: Optional[str] = None,
+    status: Optional[str] = None,
+    kuro_tipas: Optional[str] = None,
+    metai: Optional[int] = None,
+    sedimos_vietos: Optional[int] = None,
+):
+    """
+    Search for cars using optional filters.
+
+    Args:
+        db (Session): SQLAlchemy session.
+        marke (str): Car brand.
+        modelis (str): Car model.
+        spalva (str): Color.
+        status (str): Car status.
+        kuro_tipas (str): Fuel type.
+        metai (int): Year.
+        sedimos_vietos (int): Seats.
+
+    Returns:
+        List[CarOut]: Filtered list of cars with HATEOAS links.
+
+    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
+    """
+    query = db.query(Car).options(joinedload(Car.lokacija))
+
+    if marke:
+        query = query.filter(Car.marke.ilike(f"%{marke}%"))
+    if modelis:
+        query = query.filter(Car.modelis.ilike(f"%{modelis}%"))
+    if spalva:
+        query = query.filter(Car.spalva.ilike(f"%{spalva}%"))
+    if status:
+        query = query.filter(Car.automobilio_statusas == status)
+    if kuro_tipas:
+        query = query.filter(Car.kuro_tipas == kuro_tipas)
+    if metai:
+        query = query.filter(Car.metai == metai)
+    if sedimos_vietos:
+        query = query.filter(Car.sedimos_vietos == sedimos_vietos)
+
+    cars = query.all()
+    return [
+        {
+            **car.__dict__,
+            "lokacija": (
+                {
+                    "vietos_id": car.lokacija.vietos_id,
+                    "pavadinimas": car.lokacija.pavadinimas,
+                    "adresas": car.lokacija.adresas,
+                    "miestas": car.lokacija.miestas,
+                } if car.lokacija else None
+            ),
+            "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
+        }
+        for car in cars
+    ]
+
 @router.get("/{car_id}", response_model=CarOut, operation_id="getCarById")
 def get_car(car_id: int, db: Session = Depends(get_db)):
     """
@@ -216,66 +279,3 @@ def delete_car(car_id: int, db: Session = Depends(get_db)):
     db.delete(car)
     db.commit()
     return {"message": "Car deleted successfully"}
-
-@router.get("/search", response_model=List[CarOut], operation_id="searchCars")
-def search_cars(
-    db: Session = Depends(get_db),
-    marke: Optional[str] = None,
-    modelis: Optional[str] = None,
-    spalva: Optional[str] = None,
-    status: Optional[str] = None,
-    kuro_tipas: Optional[str] = None,
-    metai: Optional[int] = None,
-    sedimos_vietos: Optional[int] = None,
-):
-    """
-    Search for cars using optional filters.
-
-    Args:
-        db (Session): SQLAlchemy session.
-        marke (str): Car brand.
-        modelis (str): Car model.
-        spalva (str): Color.
-        status (str): Car status.
-        kuro_tipas (str): Fuel type.
-        metai (int): Year.
-        sedimos_vietos (int): Seats.
-
-    Returns:
-        List[CarOut]: Filtered list of cars with HATEOAS links.
-
-    Author: Gabrielė Tamaševičiūtė <gabriele.tamaseviciutes@stud.viko.lt>
-    """
-    query = db.query(Car).options(joinedload(Car.lokacija))
-
-    if marke:
-        query = query.filter(Car.marke.ilike(f"%{marke}%"))
-    if modelis:
-        query = query.filter(Car.modelis.ilike(f"%{modelis}%"))
-    if spalva:
-        query = query.filter(Car.spalva.ilike(f"%{spalva}%"))
-    if status:
-        query = query.filter(Car.automobilio_statusas == status)
-    if kuro_tipas:
-        query = query.filter(Car.kuro_tipas == kuro_tipas)
-    if metai:
-        query = query.filter(Car.metai == metai)
-    if sedimos_vietos:
-        query = query.filter(Car.sedimos_vietos == sedimos_vietos)
-
-    cars = query.all()
-    return [
-        {
-            **car.__dict__,
-            "lokacija": (
-                {
-                    "vietos_id": car.lokacija.vietos_id,
-                    "pavadinimas": car.lokacija.pavadinimas,
-                    "adresas": car.lokacija.adresas,
-                    "miestas": car.lokacija.miestas,
-                } if car.lokacija else None
-            ),
-            "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
-        }
-        for car in cars
-    ]

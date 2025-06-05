@@ -16,6 +16,7 @@ from app.schemas import client as schemas_client
 from app.schemas import order as schemas_order
 
 from app.repositories import client as repo
+from app.repositories import order as order_repo
 from utils.hateoas import generate_links
 
 router = APIRouter(
@@ -80,9 +81,20 @@ def update_client(
     db: Session = Depends(get_db),
 ):
     """
-    Atnaujinti klientą (dalinis PUT).
+    Update a client by ID (partial PUT).
 
-    Leidžia siųsti **tik pakeistus** laukus.
+    Args:
+        kliento_id (int): Client identifier.
+        client_update (ClientUpdate): Fields to update (only changed fields need to be sent).
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        ClientOut: Updated client data with HATEOAS links.
+
+    Raises:
+        HTTPException: If client is not found.
+
+    Author: Ivan Bruner <ivan.bruner@stud.viko.lt>
     """
     client = repo.get_by_id(db, kliento_id)
     if not client:
@@ -158,7 +170,7 @@ def get_client_orders(kliento_id: int, db: Session = Depends(get_db)):
 
     Author: Ivan Bruner <ivan.bruner@stud.viko.lt>
     """
-    orders = repo.get_by_client_id(db, kliento_id)
+    orders = order_repo.get_by_client_id(db, kliento_id)
     return [
         {
             **order.__dict__,
