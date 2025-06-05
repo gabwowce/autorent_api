@@ -46,10 +46,14 @@ class ReservationUpdate(BaseModel):
     Schema used for partially updating a reservation.
 
     Attributes:
+        kliento_id (Optional[int]): ID of the client.
+        automobilio_id (Optional[int]): ID of the car.
         rezervacijos_pradzia (Optional[date]): New start date.
         rezervacijos_pabaiga (Optional[date]): New end date.
         busena (Optional[str]): New status.
     """
+    kliento_id: Optional[int] = None
+    automobilio_id: Optional[int] = None
     rezervacijos_pradzia: Optional[date] = None
     rezervacijos_pabaiga: Optional[date] = None
     busena: Optional[str] = None
