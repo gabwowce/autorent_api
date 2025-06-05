@@ -51,8 +51,6 @@ CREATE TABLE `Automobilio_Atsiliepimai` (
   `data` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-
-
 CREATE TABLE `Saskaitos` (
   `saskaitos_id` INTEGER PRIMARY key AUTO_INCREMENT,
   `uzsakymo_id` INTEGER NOT NULL,
@@ -157,11 +155,11 @@ CREATE TABLE `Darbuotojai` (
   `pareigos` VARCHAR(255) NOT NULL,
   `atlyginimas` DECIMAL(10,2) NOT NULL,
   `isidarbinimo_data` DATE NOT NULL,
-   `slaptazodis` VARCHAR(255) NOT NULL,
+  `slaptazodis` VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE `Atsakingi_Automobiliai` (
-   `atsakomybes_id` INTEGER PRIMARY key AUTO_INCREMENT,
+  `atsakomybes_id` INTEGER PRIMARY key AUTO_INCREMENT,
   `darbuotojo_id` INTEGER NOT NULL,
   `automobilio_id` INTEGER NOT NULL,
   `pradzios_data` DATE NOT NULL,
@@ -314,7 +312,7 @@ VALUES
 
 
 INSERT INTO `Automobiliai` (
-   `marke`, `modelis`, `metai`, `numeris`, `vin_kodas`, 
+  `marke`, `modelis`, `metai`, `numeris`, `vin_kodas`, 
   `spalva`, `kebulo_tipas`, `pavarų_deze`, `variklio_turis`, `galia_kw`, 
   `kuro_tipas`, `rida`, `sedimos_vietos`, `klimato_kontrole`, `navigacija`, 
   `kaina_parai`, `automobilio_statusas`, `technikines_galiojimas`, `dabartine_vieta_id`, `pastabos`
@@ -331,7 +329,7 @@ INSERT INTO `Automobiliai` (
 ('Skoda', 'Superb', 2020, 'SKD777', 'TMBJJ9NP2L128765', 'Žalia', 'Sedanas', 'automatinė', 2.0, 140, 'dyzelinas', 41000, 5, TRUE, TRUE, 60.00, 'laisvas', '2026-05-30', 10, 'Talpus ir komfortiškas');
 
 
-INSERT INTO `pristatymo_vietos` (`pavadinimas`, `adresas`, `miestas`)
+INSERT INTO `Pristatymo_Vietos` (`pavadinimas`, `adresas`, `miestas`)
 VALUES
 ('Vilnius Centras', 'Gedimino pr. 1, Vilnius', 'Vilnius'),
 ('Kaunas Centras', 'Laisvės al. 10, Kaunas', 'Kaunas'),
@@ -363,20 +361,19 @@ INSERT INTO `Uzsakymai` (
 (10, 30, 8, '2025-02-10', '2025-02-15', 1, 5, 500.00, 'laukiama', FALSE);
 
 
-
-INSERT INTO `Darbuotojai` (
-    `vardas`, `pavarde`, `el_pastas`, `telefono_nr`, `pareigos`, `atlyginimas`, `isidarbinimo_data`
+INSERT INTO Darbuotojai (
+    vardas, pavarde, el_pastas, telefono_nr, pareigos, atlyginimas, isidarbinimo_data, slaptazodis
 ) VALUES
-('Tomas', 'Jonaitis', 'tomas.jonaitis@example.com', '+37060010001', 'Administratorius', 1800.00, '2022-05-10'),
-('Rasa', 'Petrauskaitė', 'rasa.petrauskaite@example.com', '+37060010002', 'Vadybininkas', 1600.00, '2021-03-15'),
-('Mindaugas', 'Kazlauskas', 'mindaugas.kazlauskas@example.com', '+37060010003', 'Mechanikas', 1700.00, '2023-07-20'),
-('Inga', 'Simonaitytė', 'inga.simonaityte@example.com', '+37060010004', 'Klientų aptarnavimas', 1500.00, '2020-09-10'),
-('Saulius', 'Jankauskas', 'saulius.jankauskas@example.com', '+37060010005', 'Vadybininkas', 1650.00, '2019-12-01'),
-('Asta', 'Kudirkaitė', 'asta.kudirkaite@example.com', '+37060010006', 'Administratorius', 1750.00, '2021-06-18'),
-('Viktoras', 'Povilaitis', 'viktoras.povilaitis@example.com', '+37060010007', 'Mechanikas', 1800.00, '2022-11-05'),
-('Simas', 'Urbonas', 'simas.urbonas@example.com', '+37060010008', 'Vadybininkas', 1550.00, '2020-04-25'),
-('Raimondas', 'Jasiūnas', 'raimondas.jasiunas@example.com', '+37060010009', 'Klientų aptarnavimas', 1450.00, '2018-08-30'),
-('Jolanta', 'Bagdonaitė', 'jolanta.bagdonaite@example.com', '+37060010010', 'Administratorius', 1600.00, '2023-01-12');
+('Tomas', 'Jonaitis', 'tomas.jonaitis@example.com', '+37060010001', 'Administratorius', 1800.00, '2022-05-10', '$2b$12$NVYVtCmorq1q8I4ME3Hly.d0XNYlKjhC3/XJVG/sPpyySjWDmBivy'),             -- "Slaptas123!"
+('Rasa', 'Petrauskaitė', 'rasa.petrauskaite@example.com', '+37060010002', 'Vadybininkas', 1600.00, '2021-03-15', '$2b$12$0Bbtkv0fLnZ2Vs.q2K4wj.ObyzykJpYi7208Jr31BIhfa1p19eLZu'),           -- "ZaliaVarna1!"
+('Mindaugas', 'Kazlauskas', 'mindaugas.kazlauskas@example.com', '+37060010003', 'Mechanikas', 1700.00, '2023-07-20', '$2b$12$fHaTKacMLvYAQU3LjlTlpOME9JkwRAOPmofoTner8LtiNIXXUF.wq'),       -- "Remontas#2024"
+('Inga', 'Simonaitytė', 'inga.simonaityte@example.com', '+37060010004', 'Klientų aptarnavimas', 1500.00, '2020-09-10', '$2b$12$6EWWuMX.FE/rz/heYLcVhOFprPKFR3o4QFBhMAp/sWiofxdCRXxSC'),     -- "KavaSuPienu!"
+('Saulius', 'Jankauskas', 'saulius.jankauskas@example.com', '+37060010005', 'Vadybininkas', 1650.00, '2019-12-01', '$2b$12$4d6Lb2GQOW2wX4Jiz2iopuLLZQ8C.ipR4Tfd.MHpdGUsj9PJ1J9u6'),         -- "Vadovas456@"
+('Asta', 'Kudirkaitė', 'asta.kudirkaite@example.com', '+37060010006', 'Administratorius', 1750.00, '2021-06-18', '$2b$12$zJVlU7scuiaDZnfLC22e7eC5jRhhJjVA2jZGOIksCMGz3cuuqf06K'),           -- "ManoPaslaptis2$"
+('Viktoras', 'Povilaitis', 'viktoras.povilaitis@example.com', '+37060010007', 'Mechanikas', 1800.00, '2022-11-05', '$2b$12$x4YR1TwjN1Xelx4ObxF7/uEs.MyHgXUGzBOTrrl0t53hbmCvr8yBO'),         -- "VerstaVariklis!"
+('Simas', 'Urbonas', 'simas.urbonas@example.com', '+37060010008', 'Vadybininkas', 1550.00, '2020-04-25', '$2b$12$wxiOMo7808YHPprKXpBureS8pvPPaUszykl7B3IZ2H.ek3VKhvq5O'),                   -- "SimasPlius33#"
+('Raimondas', 'Jasiūnas', 'raimondas.jasiunas@example.com', '+37060010009', 'Klientų aptarnavimas', 1450.00, '2018-08-30', '$2b$12$xpN9tIL.Df9w.tmekLfrXecf1Yjo4YOnzJubdDJ1DYdsvfooO0fQ.'), -- "Klientas2025@"
+('Jolanta', 'Bagdonaitė', 'jolanta.bagdonaite@example.com', '+37060010010', 'Administratorius', 1600.00, '2023-01-12', '$2b$12$pVuQyfPH6Ee6Ytzejka8bub0wRIH3S353aIcflXGGJ9HJUtUpo5o.');     -- "SaugusKodas!"
 
 
 INSERT INTO `Atsakingi_Automobiliai` (
@@ -460,11 +457,6 @@ INSERT INTO `Automobiliu_Servisas` (
 (28, '2025-02-22', NULL, TRUE, TRUE, FALSE, FALSE, 180.00, 'vyksta'),
 (29, '2025-02-24', NULL, FALSE, TRUE, TRUE, TRUE, 320.00, 'laukia'),
 (30, '2025-02-26', '2025-02-27', TRUE, TRUE, FALSE, TRUE, 140.00, 'baigtas');
-
-
-
-
-
 
 
 INSERT INTO `Kuro_Sanaudos` (
