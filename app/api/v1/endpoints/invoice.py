@@ -155,3 +155,36 @@ def update_status(invoice_id: int, status: InvoiceStatusUpdate, db: Session = De
         "client_last_name": client.pavarde,
         "links": generate_invoice_links(updated)
     }
+@router.get("/{invoice_id}", response_model=InvoiceOut, operation_id="getInvoiceById")
+def get_invoice_by_id(invoice_id: int, db: Session = Depends(get_db)):
+    """
+    Get a single invoice by ID.
+
+    Args:
+        invoice_id (int): Invoice identifier.
+        db (Session): SQLAlchemy session.
+
+    Returns:
+        InvoiceOut: Invoice with full data and HATEOAS links.
+
+    Raises:
+        HTTPException: If invoice not found.
+    """
+    invoice = crud_invoice.get_invoice_by_id(db, invoice_id)
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    order = db.query(Order).filter(Order.uzsakymo_id == invoice.uzsakymo_id).first()
+    client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
+
+    return {
+        "invoice_id": invoice.saskaitos_id,
+        "order_id": invoice.uzsakymo_id,
+        "kliento_id": order.kliento_id,
+        "total": invoice.suma,
+        "invoice_date": str(invoice.saskaitos_data),
+        "status": order.uzsakymo_busena,
+        "client_first_name": client.vardas,
+        "client_last_name": client.pavarde,
+        "links": generate_invoice_links(invoice)
+    }
