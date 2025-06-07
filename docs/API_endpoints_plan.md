@@ -82,7 +82,7 @@ Projektas: **Automobilių nuomos sistema**
 
 ---
 
-## 💬 7. Klientų palaikymas (`/support`)
+## 💬 7. Klientų aptarnavimas (`/support`)
 
 | Endpoint              | Metodas | Aprašymas                             |
 |-----------------------|---------|---------------------------------------|
