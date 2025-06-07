@@ -14,6 +14,7 @@ from app.models.order import Order
 from app.models import client as klientas_model
 from app.schemas.invoice import InvoiceCreate, InvoiceStatusUpdate
 from datetime import datetime
+from app.models.invoice import Invoice
 
 def get_invoice(db: Session):
     """
@@ -126,3 +127,18 @@ def update_invoice_status(db: Session, invoice_id: int, status_data: InvoiceStat
         db.refresh(invoice)
         return invoice
     return None
+
+def get_invoice_by_id(db: Session, invoice_id: int):
+    """
+    Gauti sąskaitą pagal jos ID.
+
+    Args:
+        db (Session): SQLAlchemy duomenų bazės sesija.
+        invoice_id (int): Sąskaitos (invoice) unikalus ID (`saskaitos_id`).
+
+    Returns:
+        Invoice | None: Grąžina `Invoice` objektą, jei rastas, kitu atveju – None.
+
+    Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
+    """
+    return db.query(Invoice).filter(Invoice.saskaitos_id == invoice_id).first()

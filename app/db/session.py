@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # Fallback lokalus adresas, jei .env nėra
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:1234@localhost:3306/autorentdb")
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:12301@localhost:3306/autorectdumb")
 
 engine = create_engine(DATABASE_URL)
 
