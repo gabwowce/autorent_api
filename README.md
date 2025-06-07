@@ -12,17 +12,17 @@
 
 ## Pagrindiniai resursai
 
-| Resursas           | Endpointas           | Aprašas                        |
-|--------------------|---------------------|--------------------------------|
-| Autentifikacija    | `/auth`             | Prisijungimas, registracija    |
-| Darbuotojai        | `/employees`        | Darbuotojų valdymas            |
-| Klientai           | `/clients`          | Klientų valdymas               |
-| Automobiliai       | `/cars`             | Automobilių valdymas           |
-| Užsakymai          | `/orders`           | Užsakymų valdymas              |
-| Rezervacijos       | `/reservations`     | Rezervacijų valdymas           |
-| Sąskaitos          | `/invoices`         | Sąskaitų generavimas           |
-| Geokodavimas       | `/geocode`          | Adreso konvertavimas į koordinates |
-| Klientų palaikymas | `/support`          | Pagalbos užklausos             |
+| Resursas             | Endpointas          | Aprašas                        |
+|----------------------|---------------------|--------------------------------|
+| Autentifikacija      | `/auth`             | Prisijungimas, registracija    |
+| Darbuotojai          | `/employees`        | Darbuotojų valdymas            |
+| Klientai             | `/clients`          | Klientų valdymas               |
+| Automobiliai         | `/cars`             | Automobilių valdymas           |
+| Užsakymai            | `/orders`           | Užsakymų valdymas              |
+| Rezervacijos         | `/reservations`     | Rezervacijų valdymas           |
+| Sąskaitos            | `/invoices`         | Sąskaitų generavimas           |
+| Geokodavimas         | `/geocode`          | Adreso konvertavimas į koordinates |
+| Klientų aptarnavimas | `/support`          | Pagalbos užklausos             |
 
 
 ---
@@ -211,7 +211,7 @@ autorent_api/
 </details>
 
 <details>
-<summary><strong>Klientų palaikymas</strong></summary>
+<summary><strong>Klientų aptarnavimas</strong></summary>
 
 - `GET    /api/v1/support/` – visos užklausos
 - `POST   /api/v1/support/` – sukurti
