@@ -586,16 +586,16 @@ INSERT INTO `Papildomos_Paslaugos` (
 
 
 INSERT INTO `Uzsakymo_Paslaugos` (`uzsakymo_id`, `paslaugos_id`) VALUES
-(11, 1), -- Vaikiška kėdutė
-(11, 4), -- Pilnas draudimas
-(13, 2), -- GPS navigacija
-(13, 5), -- Stogo bagažinė
-(15, 3), -- Papildomas vairuotojas
-(15, 6), -- Wi-Fi modemas
-(17, 7), -- Žiemos paketas
-(17, 8), -- Automobilio pristatymas
-(19, 9), -- Automobilio grąžinimas kitoje vietoje
-(19, 10); -- Kuro paslauga
+(1, 1),  -- Vaikiška kėdutė
+(1, 4),  -- Pilnas draudimas
+(3, 2),  -- GPS navigacija
+(3, 5),  -- Stogo bagažinė
+(5, 3),  -- Papildomas vairuotojas
+(5, 6),  -- Wi-Fi modemas
+(7, 7),  -- Žiemos paketas
+(7, 8),  -- Automobilio pristatymas
+(9, 9),  -- Automobilio grąžinimas kitoje vietoje
+(9, 10); -- Kuro paslauga
 
 
 
@@ -604,19 +604,16 @@ INSERT INTO `Uzsakymo_Paslaugos` (`uzsakymo_id`, `paslaugos_id`) VALUES
 INSERT INTO `Rezervavimas` (
     `kliento_id`, `automobilio_id`, `rezervacijos_pradzia`, `rezervacijos_pabaiga`, `busena`
 ) VALUES
-(1, 23, '2025-03-01', '2025-03-05', 'patvirtinta'),
-(2, 25, '2025-03-02', '2025-03-07', 'laukia'),
-(3, 22, '2025-03-03', '2025-03-06', 'patvirtinta'),
-(4, 27, '2025-03-04', '2025-03-10', 'atšaukta'),
-(5, 21, '2025-03-05', '2025-03-09', 'patvirtinta'),
-(6, 24, '2025-03-06', '2025-03-12', 'laukia'),
-(7, 26, '2025-03-07', '2025-03-11', 'patvirtinta'),
-(8, 28, '2025-03-08', '2025-03-13', 'atšaukta'),
-(9, 29, '2025-03-09', '2025-03-14', 'patvirtinta'),
-(10, 30, '2025-03-10', '2025-03-15', 'laukia');
-
-
-
+(1, 1, '2025-03-01', '2025-03-05', 'patvirtinta'),
+(2, 2, '2025-03-02', '2025-03-07', 'laukia'),
+(3, 3, '2025-03-03', '2025-03-06', 'patvirtinta'),
+(4, 4, '2025-03-04', '2025-03-10', 'atšaukta'),
+(5, 5, '2025-03-05', '2025-03-09', 'patvirtinta'),
+(6, 6, '2025-03-06', '2025-03-12', 'laukia'),
+(7, 7, '2025-03-07', '2025-03-11', 'patvirtinta'),
+(8, 8, '2025-03-08', '2025-03-13', 'atšaukta'),
+(9, 9, '2025-03-09', '2025-03-14', 'patvirtinta'),
+(10, 10, '2025-03-10', '2025-03-15', 'laukia');
 
 INSERT INTO `Nuolaidos` (
     `pavadinimas`, `procentas`, `galiojimo_pradzia`, `galiojimo_pabaiga`
@@ -632,68 +629,51 @@ INSERT INTO `Nuolaidos` (
 ('Juodojo penktadienio nuolaida', 30.00, '2025-11-29', '2025-11-30'),
 ('Gimtadienio nuolaida', 18.00, '2025-01-01', '2025-12-31');
 
-
-
 INSERT INTO `Uzsakymo_Nuolaidos` (`uzsakymo_id`, `nuolaidos_id`) VALUES
-(11, 2), -- Lojalaus kliento nuolaida
-(13, 5), -- Ilgalaikės nuomos nuolaida
-(15, 7), -- Naujoko nuolaida
-(17, 1), -- Pavasario akcija
-(19, 10); -- Gimtadienio nuolaida
+(1, 2), -- Lojalaus kliento nuolaida
+(2, 5), -- Ilgalaikės nuomos nuolaida
+(3, 7), -- Naujoko nuolaida
+(4, 1), -- Pavasario akcija
+(5, 10); -- Gimtadienio nuolaida
 
-
-
-
-INSERT INTO `Kuro_Korteles` (
-    `automobilio_id`, `korteles_numeris`, `galiojimo_pabaiga`
-) VALUES
-(21, 'FK-001-2025', '2026-02-28'),
-(22, 'FK-002-2025', '2026-03-15'),
-(23, 'FK-003-2025', '2026-04-10'),
-(24, 'FK-004-2025', '2026-05-05'),
-(25, 'FK-005-2025', '2026-06-20'),
-(26, 'FK-006-2025', '2026-07-30'),
-(27, 'FK-007-2025', '2026-08-25'),
-(28, 'FK-008-2025', '2026-09-15'),
-(29, 'FK-009-2025', '2026-10-10'),
-(30, 'FK-010-2025', '2026-11-05');
-
+INSERT INTO `Kuro_Korteles` (`automobilio_id`, `korteles_numeris`, `galiojimo_pabaiga`)
+VALUES
+(1, 'FK-001-2025', '2026-02-28'),
+(2, 'FK-002-2025', '2026-03-15'),
+(3, 'FK-003-2025', '2026-04-10'),
+(4, 'FK-004-2025', '2026-05-05'),
+(5, 'FK-005-2025', '2026-06-20'),
+(6, 'FK-006-2025', '2026-07-30'),
+(7, 'FK-007-2025', '2026-08-25'),
+(8, 'FK-008-2025', '2026-09-15'),
+(9, 'FK-009-2025', '2026-10-10'),
+(10, 'FK-010-2025', '2026-11-05');
 
 INSERT INTO `Bonusu_Naudojimas` (
     `kliento_id`, `uzsakymo_id`, `panaudoti_taskai`, `nuolaidos_id`, `data`
 ) VALUES
-(1, 11, 150, 2, '2025-02-05 12:00:00'), -- Lojalaus kliento nuolaida
-(3, 13, 200, 5, '2025-02-10 14:30:00'), -- Ilgalaikės nuomos nuolaida
-(5, 15, 100, 7, '2025-02-15 16:45:00'), -- Naujoko nuolaida
-(7, 17, 250, 1, '2025-02-20 10:15:00'), -- Pavasario akcija
-(9, 19, 300, 10, '2025-02-25 18:00:00'); -- Gimtadienio nuolaida
-
-
-
-
+(1, 1, 150, 2, '2025-02-05 12:00:00'),  -- Lojalaus kliento nuolaida
+(3, 2, 200, 5, '2025-02-10 14:30:00'),  -- Ilgalaikės nuomos nuolaida
+(5, 3, 100, 7, '2025-02-15 16:45:00'),  -- Naujoko nuolaida
+(7, 4, 250, 1, '2025-02-20 10:15:00'),  -- Pavasario akcija
+(9, 5, 300, 10, '2025-02-25 18:00:00'); -- Gimtadienio nuolaida
 
 INSERT INTO `Automobilio_Grazinimo_Vietos` (
     `automobilio_id`, `vietos_id`
 ) VALUES
-(21, 1),
-(22, 2),
-(23, 3),
-(24, 4),
-(25, 5),
-(26, 1),
-(27, 2),
-(28, 3),
-(29, 4),
-(30, 5);
-
-
-
-
-
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 1),
+(7, 2),
+(8, 3),
+(9, 4),
+(10, 5);
 
 -- Pridėti naują stulpelį "laikas"
 ALTER TABLE `Baudu_Registras` ADD COLUMN `laikas` TIME NOT NULL DEFAULT '00:00:00';
-
 
 -- Pervadinti lentelę
 RENAME TABLE `Automobilio_Grazinimo_Vietos` TO `Automobilio_Grazinimo_Vieta`;
