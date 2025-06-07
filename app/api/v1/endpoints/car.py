@@ -260,7 +260,7 @@ def update_car_status(car_id: int, data: CarStatusUpdate, db: Session = Depends(
 def delete_car(car_id: int, db: Session = Depends(get_db)):
     """
     Delete a car by ID.
-
+sea
     Args:
         car_id (int): Car ID.
         db (Session): SQLAlchemy session.
