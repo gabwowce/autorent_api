@@ -8,7 +8,7 @@ Author: Astijus Grinevičius <astijus.grinevicius@stud.viko.lt>
 Description:
     Defines the Order ORM model, its fields, and relationships for car rental orders.
 """
-from sqlalchemy import Column, Integer, Date, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Date, String, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 
@@ -43,7 +43,7 @@ class Order(Base):
     grazinimo_data = Column(Date)
     paemimo_vietos_id = Column(Integer)
     grazinimo_vietos_id = Column(Integer)
-    bendra_kaina = Column(Integer)
+    bendra_kaina = Column(Float)
     uzsakymo_busena = Column(String(50))
     turi_papildomas_paslaugas = Column(Boolean)
 

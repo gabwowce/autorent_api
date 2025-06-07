@@ -24,12 +24,13 @@ Note:
     - CORS is configured to allow requests from the frontend at http://localhost:3000.
     - Environment variables are loaded from a .env file.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from app.api.v1.endpoints import auth, employee, car, reservation, order, geocode, client, client_support, invoice
 from app.db.base import Base
 from app.db.session import engine
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 load_dotenv()
 
 # Create all database tables
@@ -57,3 +58,10 @@ app.include_router(client.router, prefix="/api/v1", tags=["Client"])
 app.include_router(client_support.router, prefix="/api/v1", tags=["Client Support"])
 app.include_router(invoice.router, prefix="/api/v1", tags=["Invoices"])
 app.include_router(geocode.router,  prefix="/api/v1", tags=["Geo Code"])
+
+@app.exception_handler(Exception)
+async def debug_exception_handler(request: Request, exc: Exception):
+    import traceback
+    tb = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    print(tb)  # Kad matytum konsolėje
+    return PlainTextResponse(tb, status_code=500)
