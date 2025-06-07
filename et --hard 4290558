@@ -1,0 +1,23 @@
+[33mb3d2c74[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mvpetr[m[33m, [m[1;32mmain[m[33m)[m HEAD@{0}: merge main: Fast-forward
+[33m4290558[m[33m ([m[1;31morigin/vpetr[m[33m)[m HEAD@{1}: checkout: moving from main to vpetr
+[33mb3d2c74[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mvpetr[m[33m, [m[1;32mmain[m[33m)[m HEAD@{2}: checkout: moving from vpetr to main
+[33m4290558[m[33m ([m[1;31morigin/vpetr[m[33m)[m HEAD@{3}: checkout: moving from main to vpetr
+[33mb3d2c74[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mvpetr[m[33m, [m[1;32mmain[m[33m)[m HEAD@{4}: commit (merge): .
+[33m76ca574[m HEAD@{5}: commit (merge): Merge branch 'main' of https://github.com/gabwowce/autorent_api
+[33m4290558[m[33m ([m[1;31morigin/vpetr[m[33m)[m HEAD@{6}: merge vpetr: Fast-forward
+[33m02000ec[m HEAD@{7}: checkout: moving from vpetr to main
+[33m4290558[m[33m ([m[1;31morigin/vpetr[m[33m)[m HEAD@{8}: checkout: moving from main to vpetr
+[33m02000ec[m HEAD@{9}: commit: updating reservation creat endpoint
+[33md21e60d[m[33m ([m[1;31morigin/ibrun[m[33m)[m HEAD@{10}: pull: Fast-forward
+[33m11ffde4[m HEAD@{11}: commit: merged all branches to main
+[33mb464ac3[m HEAD@{12}: commit (merge): Merge remote-tracking branch 'origin/vpetr'
+[33mba6b40f[m HEAD@{13}: commit (merge): Merge remote-tracking branch 'origin/ibrun'
+[33m7294289[m HEAD@{14}: commit (merge): Merge remote-tracking branch 'origin/agrin'
+[33m0ee022b[m HEAD@{15}: commit (merge): Merge branch 'main' of https://github.com/gabwowce/autorent_api
+[33ma6e6540[m[33m ([m[1;31morigin/gtama[m[33m, [m[1;32mgtama[m[33m)[m HEAD@{16}: reset: moving to HEAD
+[33ma6e6540[m[33m ([m[1;31morigin/gtama[m[33m, [m[1;32mgtama[m[33m)[m HEAD@{17}: merge origin/gtama: Fast-forward
+[33m5ddd131[m HEAD@{18}: checkout: moving from gtama to main
+[33ma6e6540[m[33m ([m[1;31morigin/gtama[m[33m, [m[1;32mgtama[m[33m)[m HEAD@{19}: commit: documented
+[33me4d5e1f[m HEAD@{20}: commit: updating code
+[33m5ddd131[m HEAD@{21}: checkout: moving from main to gtama
+[33m5ddd131[m HEAD@{22}: clone: from https://github.com/gabwowce/autorent_api.git
