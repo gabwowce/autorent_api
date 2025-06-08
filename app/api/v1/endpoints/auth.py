@@ -17,6 +17,7 @@ from app.db.session import SessionLocal
 from app.repositories import employee as employee_repo
 from app.services.auth_service import verify_password, create_access_token, get_password_hash
 from app.api.deps import get_current_user, get_db
+from fastapi import Form
 
 router = APIRouter()
 
@@ -129,3 +130,16 @@ def change_password(
     user.slaptazodis = get_password_hash(request.naujas_slaptazodis)
     db.commit()
     return {"message": "Password updated successfully"}
+
+@router.post("/token", response_model=TokenResponse, operation_id="swaggerLogin")
+def login_swagger(
+    username: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = employee_repo.get_by_email(db, username)
+    if not user or not verify_password(password, user.slaptazodis):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_access_token(data={"sub": user.el_pastas})
+    return TokenResponse(access_token=token)
