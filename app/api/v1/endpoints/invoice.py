@@ -17,7 +17,7 @@ from app.repositories import invoice as crud_invoice
 from utils.hateoas import generate_links
 from app.models.order import Order
 from app.models import client as klientas_model
-
+from app.models.invoice import Invoice 
 
 router = APIRouter(
     prefix="/invoices",
@@ -81,9 +81,14 @@ def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
 
     Author: Vytautas Petronis <vytautas.petronis@stud.viko.lt>
     """
+    existing = db.query(Invoice).filter(Invoice.uzsakymo_id == invoice.order_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="This order already has an invoice.")
+
+    # Sukurti sąskaitą
     created = crud_invoice.create_invoice(db, invoice)
 
-    # Rask order ir klientą (nes reikia status, client_first_name, client_last_name)
+    # Paimti papildomą info
     order = db.query(Order).filter(Order.uzsakymo_id == created.uzsakymo_id).first()
     client = db.query(klientas_model.Client).filter(klientas_model.Client.kliento_id == order.kliento_id).first()
 
@@ -92,7 +97,7 @@ def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
         "order_id": created.uzsakymo_id,
         "kliento_id": order.kliento_id,
         "total": created.suma,
-        "invoice_date": str(created.saskaitos_data),  # jei reikia, paversk į str
+        "invoice_date": str(created.saskaitos_data),
         "status": order.uzsakymo_busena,
         "client_first_name": client.vardas,
         "client_last_name": client.pavarde,
