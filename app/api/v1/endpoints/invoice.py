@@ -18,10 +18,12 @@ from utils.hateoas import generate_links
 from app.models.order import Order
 from app.models import client as klientas_model
 from app.models.invoice import Invoice 
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/invoices",
-    tags=["Invoices"]
+    tags=["Invoices"],
+    dependencies=[Depends(get_current_user)]
 )
 
 def generate_invoice_links(invoice) -> list[dict]:

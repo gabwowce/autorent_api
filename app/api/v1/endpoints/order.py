@@ -15,10 +15,12 @@ from app.api.deps import get_db
 from app.schemas import order as schemas
 from app.repositories import order as repo
 from utils.hateoas import generate_links
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/orders",
-    tags=["Orders"]
+    tags=["Orders"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get("/", response_model=list[schemas.OrderOut], operation_id="getAllOrders")

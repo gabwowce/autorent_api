@@ -6,10 +6,12 @@ from app.repositories import reservation as repo
 from utils.hateoas import generate_links
 from typing import Optional
 from datetime import date
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/reservations",
-    tags=["Reservations"]
+    tags=["Reservations"],
+    dependencies=[Depends(get_current_user)]
 )
 
 # === /latest turi būti PRIEŠ /{rezervacijos_id} ===

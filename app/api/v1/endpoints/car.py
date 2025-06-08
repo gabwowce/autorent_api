@@ -22,10 +22,12 @@ from app.api.deps import get_db
 from app.models.car import Car
 from app.schemas.car import CarOut, CarCreate, CarUpdate, CarStatusUpdate
 from utils.hateoas import generate_links
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/cars",
-    tags=["Cars"]
+    tags=["Cars"],
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get("/", response_model=List[CarOut], operation_id="getAllCars")

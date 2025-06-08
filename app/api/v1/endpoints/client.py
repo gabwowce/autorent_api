@@ -18,9 +18,11 @@ from app.schemas import order as schemas_order
 from app.repositories import client as repo
 from app.repositories import order as order_repo
 from utils.hateoas import generate_links
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/clients",  
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.get("/", response_model=list[schemas_client.ClientOut], operation_id="getAllClients")
