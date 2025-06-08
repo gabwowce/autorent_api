@@ -12,11 +12,12 @@ Description:
 Usage:
     Register this router with the main FastAPI app to enable /api/geocode POST endpoint.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.schemas.geocode import GeocodeRequest, GeocodeResponse
 from app.repositories.geocode import geocode_address
+from app.api.deps import get_current_user
 
-router = APIRouter(tags=["Geo Code"])
+router = APIRouter(tags=["Geo Code"], dependencies=[Depends(get_current_user)])
 
 @router.post("/geocode", response_model=GeocodeResponse, operation_id="geoCode")
 async def geocode(req: GeocodeRequest):

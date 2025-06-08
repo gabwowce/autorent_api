@@ -15,10 +15,12 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.schemas.client_support import ClientSupportCreate, ClientSupportOut, ClientSupportUpdate
 from app.repositories import client_support
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/support",
-    tags=["Client Support"]
+    tags=["Client Support"],
+    dependencies=[Depends(get_current_user)]
 )
 
 def build_support_links(support) -> list[dict]:
