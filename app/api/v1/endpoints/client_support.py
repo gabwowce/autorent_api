@@ -10,12 +10,14 @@ Description:
     create, retrieve, update (answer), and list unanswered requests.
     HATEOAS links are included in all responses for better API navigation.
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,Query
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
-from app.schemas.client_support import ClientSupportCreate, ClientSupportOut, ClientSupportUpdate
+from app.schemas.client_support import ClientSupportCreate, ClientSupportBase, ClientSupportOut, ClientSupportUpdate
 from app.repositories import client_support
 from app.api.deps import get_current_user
+from datetime import datetime, timedelta
+from app.models.client_support import ClientSupport
 
 from app.api.permissions import require_perm, Perm
 
@@ -43,6 +45,48 @@ def build_support_links(support) -> list[dict]:
         {"rel": "employee", "href": f"/employees/{support.darbuotojo_id}"},
         {"rel": "answer", "href": f"/support/{support.uzklausos_id}"},
         {"rel": "delete", "href": f"/support/{support.uzklausos_id}"}
+    ]
+
+@router.get(
+    "/overdue",
+    response_model=list[ClientSupportOut],
+    operation_id="getOverdueSupports",
+    dependencies=[Depends(require_perm(Perm.VIEW))]
+)
+def get_overdue_supports(
+    hours: int = Query(24, ge=1, le=7*24, description="Hours since creation to consider a ticket overdue"),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieve overdue (unanswered) client support requests older than the given number of hours.
+
+    A ticket is considered overdue if:
+      1) It has no answer (atsakymas is NULL), and
+      2) pateikimo_data < now - hours
+    """
+    if hours <= 0:
+        raise HTTPException(status_code=400, detail="`hours` must be positive.")
+
+    threshold = datetime.utcnow() - timedelta(hours=hours)
+
+    # Būtiniausi laukai pagal tavo DB
+    q = db.query(ClientSupport).filter(
+        ClientSupport.atsakymas.is_(None),
+        ClientSupport.pateikimo_data < threshold
+    )
+
+    # Jei turi statuso lauką – gali papildomai filtruoti „atviras“:
+    # if hasattr(ClientSupport, "statusas"):
+    #     q = q.filter(ClientSupport.statusas.in_(["OPEN", "PENDING", "NEATSAKYTA"]))
+
+    items = q.order_by(ClientSupport.pateikimo_data.asc()).all()
+
+    return [
+        {
+            **item.__dict__,
+            "links": build_support_links(item)
+        }
+        for item in items
     ]
 
 

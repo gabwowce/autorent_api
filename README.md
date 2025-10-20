@@ -206,6 +206,8 @@ autorent_api/
 
 - `GET    /api/v1/cars/` – visi automobiliai
 - `GET    /api/v1/cars/{id}` – konkretus automobilis
+- `GET    /api/v1/cars/available` – laisvi automobiliai nurodytu intervalu
+- `GET    /api/v1/cars/utilization` – kiek dienų per [from, to) kiekvienas auto turėjo rezervacijų (procentais + dienų skaičius).
 - `POST   /api/v1/cars/` – sukurti naują
 - `PUT    /api/v1/cars/{id}` – atnaujinti
 - `PATCH  /api/v1/cars/{id}/status` – keisti būseną
@@ -230,6 +232,7 @@ autorent_api/
 <details>
 <summary><strong>Rezervacijos</strong></summary>
 
+- `GET    /api/v1/quote` – endpoint’as kainos sąmatai (be rezervacijos kūrimo)
 - `GET    /api/v1/reservations/` – visos rezervacijos
 - `GET    /api/v1/reservations/latest` – naujausios rezervacijos
 - `GET    /api/v1/reservations/{id}` – viena rezervacija
@@ -260,6 +263,7 @@ autorent_api/
 <details>
 <summary><strong>Klientų aptarnavimas</strong></summary>
 
+- `GET    /api/v1/overdue` – endpoint'as ieško „vėluojančių“ užklausų, t. y. neatsakytų ir senesnių nei N val..
 - `GET    /api/v1/support/` – visos užklausos
 - `POST   /api/v1/support/` – sukurti
 - `GET    /api/v1/support/unanswered` – neatsakytos
