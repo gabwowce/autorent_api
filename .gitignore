@@ -1,3 +1,14 @@
-.vs/
+# Python
+.venv/
 __pycache__/
-*.py[cod]
+*.pyc
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Node (jei yra frontend)
+node_modules/
+.next/
+dist/
