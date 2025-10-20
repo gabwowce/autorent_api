@@ -17,6 +17,8 @@ from app.schemas.client_support import ClientSupportCreate, ClientSupportOut, Cl
 from app.repositories import client_support
 from app.api.deps import get_current_user
 
+from app.api.permissions import require_perm, Perm
+
 router = APIRouter(
     prefix="/support",
     tags=["Client Support"],
@@ -43,7 +45,10 @@ def build_support_links(support) -> list[dict]:
         {"rel": "delete", "href": f"/support/{support.uzklausos_id}"}
     ]
 
-@router.post("/", response_model=ClientSupportOut, operation_id="createSupport")
+
+@router.post("/", response_model=ClientSupportOut, operation_id="createSupport", 
+             dependencies=[Depends(require_perm(Perm.EDIT))])
+
 def create_support(support: ClientSupportCreate, db: Session = Depends(get_db)):
     """
     Create a new client support request.
@@ -63,7 +68,8 @@ def create_support(support: ClientSupportCreate, db: Session = Depends(get_db)):
         "links": build_support_links(created)
     }
 
-@router.get("/", response_model=list[ClientSupportOut], operation_id="getAllSupports")
+@router.get("/", response_model=list[ClientSupportOut], operation_id="getAllSupports",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_all_supports(db: Session = Depends(get_db)):
     """
     Retrieve all client support requests.
@@ -85,7 +91,8 @@ def get_all_supports(db: Session = Depends(get_db)):
         for item in items
     ]
 
-@router.get("/unanswered", response_model=list[ClientSupportOut], operation_id="getUnansweredSupports")
+@router.get("/unanswered", response_model=list[ClientSupportOut], operation_id="getUnansweredSupports",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_unanswered_supports(db: Session = Depends(get_db)):
     """
     Retrieve all unanswered client support requests.
@@ -107,7 +114,8 @@ def get_unanswered_supports(db: Session = Depends(get_db)):
         for item in items
     ]
 
-@router.get("/{uzklausos_id}", response_model=ClientSupportOut, operation_id="getSupport")
+@router.get("/{uzklausos_id}", response_model=ClientSupportOut, operation_id="getSupport",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_support(uzklausos_id: int, db: Session = Depends(get_db)):
     """
     Retrieve a specific client support request by ID.
@@ -132,7 +140,8 @@ def get_support(uzklausos_id: int, db: Session = Depends(get_db)):
         "links": build_support_links(support)
     }
 
-@router.patch("/{uzklausos_id}", response_model=ClientSupportOut, operation_id="answerToSupport")
+@router.patch("/{uzklausos_id}", response_model=ClientSupportOut, operation_id="answerToSupport",
+              dependencies=[Depends(require_perm(Perm.EDIT))])
 def answer_to_support(uzklausos_id: int, data: ClientSupportUpdate, db: Session = Depends(get_db)):
     """
     Answer to an existing client support request.

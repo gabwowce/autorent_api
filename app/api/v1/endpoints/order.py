@@ -16,6 +16,7 @@ from app.schemas import order as schemas
 from app.repositories import order as repo
 from utils.hateoas import generate_links
 from app.api.deps import get_current_user
+from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
     prefix="/orders",
@@ -23,7 +24,8 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)]
 )
 
-@router.get("/", response_model=list[schemas.OrderOut], operation_id="getAllOrders")
+@router.get("/", response_model=list[schemas.OrderOut], operation_id="getAllOrders",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_all_orders(db: Session = Depends(get_db)):
     """
     Retrieve all orders.
@@ -50,7 +52,8 @@ def get_all_orders(db: Session = Depends(get_db)):
         for order in orders
     ]
 
-@router.get("/{uzsakymo_id}", response_model=schemas.OrderOut, operation_id="getOrderById")
+@router.get("/{uzsakymo_id}", response_model=schemas.OrderOut, operation_id="getOrderById",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_order(uzsakymo_id: int, db: Session = Depends(get_db)):
     """
     Retrieve an order by ID.
@@ -80,7 +83,8 @@ def get_order(uzsakymo_id: int, db: Session = Depends(get_db)):
         ]
     }
 
-@router.post("/", response_model=schemas.OrderOut, operation_id="createOrder")
+@router.post("/", response_model=schemas.OrderOut, operation_id="createOrder",
+             dependencies=[Depends(require_perm(Perm.EDIT))])
 def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
     """
     Create a new order.
@@ -105,7 +109,8 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
         ]
     }
 
-@router.delete("/{uzsakymo_id}", operation_id="deleteOrder")
+@router.delete("/{uzsakymo_id}", operation_id="deleteOrder",
+               dependencies=[Depends(require_perm(Perm.ADMIN))])
 def delete_order(uzsakymo_id: int, db: Session = Depends(get_db)):
     """
     Delete an order by ID.
@@ -127,7 +132,8 @@ def delete_order(uzsakymo_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Order not found")
     return {"ok": True}
 
-@router.get("/stats/by-status", operation_id="getOrderStatsByStatus")
+@router.get("/stats/by-status", operation_id="getOrderStatsByStatus",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_order_stats_by_status(db: Session = Depends(get_db)):
     """
     Get order statistics grouped by status.
@@ -142,7 +148,8 @@ def get_order_stats_by_status(db: Session = Depends(get_db)):
     """
     return repo.get_order_counts_by_status(db)
 
-@router.get("/by-client/{kliento_id}", response_model=list[schemas.OrderOut], operation_id="getOrderByClient")
+@router.get("/by-client/{kliento_id}", response_model=list[schemas.OrderOut],
+             operation_id="getOrderByClient", dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_orders_by_client(kliento_id: int, db: Session = Depends(get_db)):
     """
     Retrieve all orders for a specific client.
@@ -171,7 +178,8 @@ def get_orders_by_client(kliento_id: int, db: Session = Depends(get_db)):
     ]
 
 
-@router.put("/{uzsakymo_id}", response_model=schemas.OrderOut, operation_id="updateOrder")
+@router.put("/{uzsakymo_id}", response_model=schemas.OrderOut, operation_id="updateOrder",
+            dependencies=[Depends(require_perm(Perm.EDIT))])
 def update_order(uzsakymo_id: int, order_update: schemas.OrderUpdate, db: Session = Depends(get_db)):
     order = repo.get_by_id(db, uzsakymo_id)
     if not order:

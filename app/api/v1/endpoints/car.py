@@ -23,14 +23,16 @@ from app.models.car import Car
 from app.schemas.car import CarOut, CarCreate, CarUpdate, CarStatusUpdate
 from utils.hateoas import generate_links
 from app.api.deps import get_current_user
-
+from app.api.permissions import require_perm, Perm
 router = APIRouter(
     prefix="/cars",
     tags=["Cars"],
     dependencies=[Depends(get_current_user)]
 )
 
-@router.get("/", response_model=List[CarOut], operation_id="getAllCars")
+@router.get("/", response_model=List[CarOut], operation_id="getAllCars",
+             dependencies=[Depends(require_perm(Perm.VIEW))])
+
 def get_all_cars(db: Session = Depends(get_db)):
     """
     Retrieve all cars with their location and HATEOAS links.
@@ -60,7 +62,9 @@ def get_all_cars(db: Session = Depends(get_db)):
         for car in cars
     ]
 
-@router.get("/search", response_model=List[CarOut], operation_id="searchCars")
+
+@router.get("/search", response_model=List[CarOut], operation_id="searchCars", dependencies=[Depends(require_perm(Perm.VIEW))])
+
 def search_cars(
     db: Session = Depends(get_db),
     marke: Optional[str] = None,
@@ -123,7 +127,9 @@ def search_cars(
         for car in cars
     ]
 
-@router.get("/{car_id}", response_model=CarOut, operation_id="getCarById")
+
+@router.get("/{car_id}", response_model=CarOut, operation_id="getCarById", dependencies=[Depends(require_perm(Perm.VIEW))])
+
 def get_car(car_id: int, db: Session = Depends(get_db)):
     """
     Retrieve a specific car by ID.
@@ -156,7 +162,9 @@ def get_car(car_id: int, db: Session = Depends(get_db)):
         "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
     }
 
-@router.post("/", response_model=CarOut, operation_id="createCar")
+
+@router.post("/", response_model=CarOut, operation_id="createCar", dependencies=[Depends(require_perm(Perm.EDIT))])
+
 def create_car(data: CarCreate, db: Session = Depends(get_db)):
     """
     Create a new car record.
@@ -180,7 +188,9 @@ def create_car(data: CarCreate, db: Session = Depends(get_db)):
         "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
     }
 
-@router.put("/{car_id}", response_model=CarOut, operation_id="updateCar")
+
+@router.put("/{car_id}", response_model=CarOut, operation_id="updateCar", dependencies=[Depends(require_perm(Perm.EDIT))])
+
 def update_car(car_id: int, data: CarUpdate, db: Session = Depends(get_db)):
     """
     Update an existing car by ID.
@@ -220,7 +230,9 @@ def update_car(car_id: int, data: CarUpdate, db: Session = Depends(get_db)):
         "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
     }
 
-@router.patch("/{car_id}/status", response_model=CarOut, operation_id="updateCarStatus")
+
+@router.patch("/{car_id}/status", response_model=CarOut, operation_id="updateCarStatus", dependencies=[Depends(require_perm(Perm.EDIT))])
+
 def update_car_status(car_id: int, data: CarStatusUpdate, db: Session = Depends(get_db)):
     """
     Update status of a car.
@@ -258,7 +270,8 @@ def update_car_status(car_id: int, data: CarStatusUpdate, db: Session = Depends(
         "links": generate_links("cars", car.automobilio_id, ["update", "delete", "update_status"]),
     }
 
-@router.delete("/{car_id}", operation_id="deleteCar")
+@router.delete("/{car_id}", operation_id="deleteCar", dependencies=[Depends(require_perm(Perm.ADMIN))])
+
 def delete_car(car_id: int, db: Session = Depends(get_db)):
     """
     Delete a car by ID.
