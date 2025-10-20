@@ -26,7 +26,7 @@
 
 
 ---
-## Autentifikacija
+## Autentifikacijos metodai
 
 | Metodas          | Endpointas                 | Tipas     | Naudojimas             | Aprašymas                                             |
 | ---------------- | -------------------------- | --------- | ---------------------- | ----------------------------------------------------- |
@@ -37,8 +37,7 @@
 
 
 ---
-## Autentifikacija
-Vartotojų Rolės ir Leidimai
+## Vartotojų Rolės ir Leidimai
 
 | Rolė      | Sukūrimo būdas               | Gali Skaityti | Gali Atnaujinti | Gali Trinti |
 | --------- | ---------------------------- | ------------- | --------------- | ----------- |
