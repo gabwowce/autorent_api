@@ -16,6 +16,7 @@ from app.api.deps import get_db
 from app.schemas.client_support import ClientSupportCreate, ClientSupportOut, ClientSupportUpdate
 from app.repositories import client_support
 from app.api.deps import get_current_user
+
 from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
@@ -44,8 +45,10 @@ def build_support_links(support) -> list[dict]:
         {"rel": "delete", "href": f"/support/{support.uzklausos_id}"}
     ]
 
+
 @router.post("/", response_model=ClientSupportOut, operation_id="createSupport", 
              dependencies=[Depends(require_perm(Perm.EDIT))])
+
 def create_support(support: ClientSupportCreate, db: Session = Depends(get_db)):
     """
     Create a new client support request.
