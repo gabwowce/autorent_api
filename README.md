@@ -27,6 +27,47 @@
 
 ---
 
+## Autentifikacija ir Vartotojų Rolės
+
+**Autentifikacijos metodai:** 
+
+| Metodas          | Endpointas                 | Tipas     | Naudojimas             | Aprašymas                                             |
+| ---------------- | -------------------------- | --------- | ---------------------- | ----------------------------------------------------- |
+| **Local JSON**   | `POST /api/v1/login`       | JSON Body | Frontend               | Vartotojas įveda el. paštą ir slaptažodį JSON formatu |
+| **OAuth2 Form**  | `POST /api/v1/token`       | Form-Data | Swagger / CLI          | Swagger sugeneruota forma: `username` ir `password`   |
+| **Google OAuth** | `GET /api/v1/google/login` | Redirect  | Išorinis prisijungimas | SSO prisijungimas per Google                          |
+| **GitHub OAuth** | `GET /api/v1/github/login` | Redirect  | Išorinis prisijungimas | SSO prisijungimas per GitHub                          |
+
+
+**Vartotojų Rolės ir Leidimai:** 
+
+
+| Rolė      | Sukūrimo būdas               | Gali Skaityti | Gali Atnaujinti | Gali Trinti |
+| --------- | ---------------------------- | ------------- | --------------- | ----------- |
+| **Admin** | Rankiniu būdu / DB           | ✅             | ✅               | ✅           |
+| **Emplo** | Registracija per `/register` | ✅             | ✅               | ❌           |
+| **Guest** | Google/GitHub OAuth          | ✅             | ❌               | ❌           |
+
+**Leidimų tikrinimo mechanizmas** 
+- JWT token’e saugoma sub (el. paštas) ir role
+- Middleware (get_current_user) nuskaito šiuos duomenis ir pritaiko leidimus
+- Endpointuose naudojamas dekoratorius require_perm(...)
+
+```python
+from app.core.permissions import require_perm, Perm
+
+@router.get("/cars/", dependencies=[Depends(require_perm(Perm.VIEW))])
+def get_all_cars(): ...
+
+@router.post("/cars/", dependencies=[Depends(require_perm(Perm.EDIT))])
+def create_car(): ...
+
+@router.delete("/cars/{id}", dependencies=[Depends(require_perm(Perm.ADMIN))])
+def delete_car(): ...
+```
+
+---
+
 ## Kodo struktūra
 
 ```
@@ -123,12 +164,21 @@ autorent_api/
 <details>
 <summary><strong>Autentifikacija</strong></summary>
 
-- `POST   /api/v1/auth/login` – prisijungimas (JWT)
-- `POST   /api/v1/auth/register` – naujo darbuotojo registracija
-- `POST   /api/v1/auth/logout` – atsijungimas (placeholder)
-- `GET    /api/v1/auth/me` – savo profilis
-- `POST   /api/v1/auth/change-password` – keisti slaptažodį
+**Vietinis prisijungimas**
+- `POST   /api/v1/login`            – prisijungimas (JSON body: el_pastas, slaptazodis) → JWT
+- `POST   /api/v1/token`            – prisijungimas (form: username, password) – patogu Swagger
 
+**Social OAuth**
+- `GET    /api/v1/google/login`     – Google OAuth (pirmą kartą sukuria vartotoją su role `Guest`)
+- `GET    /api/v1/github/login`     – GitHub OAuth (pirmą kartą sukuria vartotoją su role `Guest`)
+
+**Vartotojas / slaptažodžiai**
+- `POST   /api/v1/auth/register`    – naujo darbuotojo registracija (dažn. Emplo)
+- `POST   /api/v1/auth/change-password` – keisti slaptažodį
+- `POST   /api/v1/auth/logout`      – atsijungimas (placeholder)
+- `GET    /api/v1/auth/me`          – prisijungusio vartotojo profilis
+
+> Pastaba: Swagger „Authorize“ laukelyje įklijuok **tik JWT** (be `Bearer `).
 </details>
 
 <details>

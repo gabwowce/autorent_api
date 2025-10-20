@@ -93,3 +93,4 @@ xxhash==3.5.0
 yarl==1.18.3
 authlib
 python-dotenv
+pydantic

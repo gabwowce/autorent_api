@@ -27,9 +27,11 @@ from app.repositories import employee as employee_repo
 from app.services.auth_service import verify_password, create_access_token, get_password_hash
 from utils.config import settings
 
-load_dotenv()
 
-router = APIRouter()
+
+load_dotenv()
+router = APIRouter( tags=["Authentication"]) 
+
 
 # -------- Google OAuth (OIDC) ----------
 
@@ -91,7 +93,7 @@ async def github_callback(request: Request, db: Session = Depends(get_db)):
             "isidarbinimo_data": date.today(), "slaptazodis": get_password_hash(random_pwd),
         })
 
-    jwt_token = create_access_token(data={"sub": email, "auth": "github"})
+    jwt_token = create_access_token(data={"sub": email, "auth": "github", "role": user.pareigos})
     return RedirectResponse(url=f"{FRONTEND_URL}/oauth#access_token={jwt_token}", status_code=303)
 
 
@@ -138,7 +140,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         user = employee_repo.create_employee(db, employee_data)
 
     # Išduodam Jūsų JWT
-    jwt_token = create_access_token(data={"sub": email, "auth": "google"})
+    jwt_token = create_access_token(data={"sub": email, "auth": "google", "role": user.pareigos})
 
     # Variantas A: redirect į FE su token fragment’e
     return RedirectResponse(url=f"{FRONTEND_URL}/oauth#access_token={jwt_token}")
@@ -266,13 +268,13 @@ def change_password(
 
 @router.post("/token", response_model=TokenResponse, operation_id="swaggerLogin")
 def login_swagger(
-    username: str = Form(...),
+    username: str = Form(...),   # čia įrašysi el. paštą
     password: str = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     user = employee_repo.get_by_email(db, username)
     if not user or not verify_password(password, user.slaptazodis):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    token = create_access_token(data={"sub": user.el_pastas})
-    return TokenResponse(access_token=token)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    token = create_access_token({"sub": user.el_pastas, "role": user.pareigos})
+    return TokenResponse(access_token=token, token_type="bearer")

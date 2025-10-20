@@ -19,6 +19,7 @@ from app.models.order import Order
 from app.models import client as klientas_model
 from app.models.invoice import Invoice 
 from app.api.deps import get_current_user
+from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
     prefix="/invoices",
@@ -47,7 +48,8 @@ def generate_invoice_links(invoice) -> list[dict]:
     ]
 
 
-@router.get("/", response_model=list[InvoiceOut], operation_id="getAllInvoices")
+@router.get("/", response_model=list[InvoiceOut], operation_id="getAllInvoices",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_all_invoices(db: Session = Depends(get_db)):
     """
     Retrieve all invoices.
@@ -69,7 +71,8 @@ def get_all_invoices(db: Session = Depends(get_db)):
         for invoice in raw_data
     ]
 
-@router.post("/", response_model=InvoiceOut, operation_id="createInvoice")
+@router.post("/", response_model=InvoiceOut, operation_id="createInvoice",
+             dependencies=[Depends(require_perm(Perm.EDIT))])
 def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
     """
     Create a new invoice.
@@ -106,7 +109,7 @@ def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
         "links": generate_invoice_links(created)
     }
 
-@router.delete("/{invoice_id}", operation_id="deleteInvoice")
+@router.delete("/{invoice_id}", operation_id="deleteInvoice", dependencies=[Depends(require_perm(Perm.ADMIN))])
 def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
     """
     Delete an invoice by ID.
@@ -128,7 +131,8 @@ def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Invoice not found")
     return {"detail": "Invoice deleted"}
 
-@router.patch("/{invoice_id}/status", response_model=InvoiceOut, operation_id="updateStatus")
+@router.patch("/{invoice_id}/status", response_model=InvoiceOut, operation_id="updateStatus",
+              dependencies=[Depends(require_perm(Perm.EDIT))])
 def update_status(invoice_id: int, status: InvoiceStatusUpdate, db: Session = Depends(get_db)):
     """
     Update the status of an invoice.
@@ -162,7 +166,8 @@ def update_status(invoice_id: int, status: InvoiceStatusUpdate, db: Session = De
         "client_last_name": client.pavarde,
         "links": generate_invoice_links(updated)
     }
-@router.get("/{invoice_id}", response_model=InvoiceOut, operation_id="getInvoiceById")
+@router.get("/{invoice_id}", response_model=InvoiceOut, operation_id="getInvoiceById",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_invoice_by_id(invoice_id: int, db: Session = Depends(get_db)):
     """
     Get a single invoice by ID.

@@ -18,6 +18,7 @@ from app.api.deps import get_db
 from app.services.auth_service import get_password_hash
 from utils.hateoas import generate_links
 from app.api.deps import get_current_user
+from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
     prefix="/employees",
@@ -25,7 +26,8 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)]
 )
 
-@router.post("/", response_model=EmployeeOut, operation_id="createEmployee")
+@router.post("/", response_model=EmployeeOut, operation_id="createEmployee",
+             dependencies=[Depends(require_perm(Perm.EDIT))])
 def create_employee(data: EmployeeCreate, db: Session = Depends(get_db)):
     """
     Create a new employee.
@@ -53,7 +55,8 @@ def create_employee(data: EmployeeCreate, db: Session = Depends(get_db)):
         "links": generate_links("employees", employee.darbuotojo_id, ["update", "delete"])
     }
 
-@router.get("/", response_model=list[EmployeeOut], operation_id="getAllEmployees")
+@router.get("/", response_model=list[EmployeeOut], operation_id="getAllEmployees",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_employees(db: Session = Depends(get_db)):
     """
     Retrieve all employees.
@@ -75,7 +78,8 @@ def get_employees(db: Session = Depends(get_db)):
         for emp in employees
     ]
 
-@router.get("/{employee_id}", response_model=EmployeeOut, operation_id="getEmployee")
+@router.get("/{employee_id}", response_model=EmployeeOut, operation_id="getEmployee",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_employee(employee_id: int, db: Session = Depends(get_db)):
     """
     Retrieve an employee by ID.
@@ -100,7 +104,8 @@ def get_employee(employee_id: int, db: Session = Depends(get_db)):
         "links": generate_links("employees", employee.darbuotojo_id, ["update", "delete"])
     }
 
-@router.put("/{employee_id}", response_model=EmployeeOut, operation_id="updateEmployee")
+@router.put("/{employee_id}", response_model=EmployeeOut, operation_id="updateEmployee",
+            dependencies=[Depends(require_perm(Perm.EDIT))])
 def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = Depends(get_db)):
     """
     Update an existing employee.
@@ -133,7 +138,8 @@ def update_employee(employee_id: int, data: EmployeeUpdate, db: Session = Depend
         "links": generate_links("employees", updated.darbuotojo_id, ["update", "delete"])
     }
 
-@router.delete("/{employee_id}", operation_id="deleteEmployee")
+@router.delete("/{employee_id}", operation_id="deleteEmployee",
+               dependencies=[Depends(require_perm(Perm.ADMIN))])
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     """
     Delete an employee by ID.

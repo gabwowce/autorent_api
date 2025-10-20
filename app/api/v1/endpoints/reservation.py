@@ -7,6 +7,7 @@ from utils.hateoas import generate_links
 from typing import Optional
 from datetime import date
 from app.api.deps import get_current_user
+from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
     prefix="/reservations",
@@ -15,7 +16,8 @@ router = APIRouter(
 )
 
 # === /latest turi būti PRIEŠ /{rezervacijos_id} ===
-@router.get("/latest", response_model=list[schemas.ReservationSummary], operation_id="getLatestReservations")
+@router.get("/latest", response_model=list[schemas.ReservationSummary], 
+            operation_id="getLatestReservations", dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_latest_reservations(db: Session = Depends(get_db), limit: int = 5):
     """
     Get the latest reservations with details.
@@ -42,7 +44,8 @@ def get_latest_reservations(db: Session = Depends(get_db), limit: int = 5):
         for r in results
     ]
 
-@router.get("/", response_model=list[schemas.ReservationOut], operation_id="getAllReservations")
+@router.get("/", response_model=list[schemas.ReservationOut], operation_id="getAllReservations",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_all_reservations(db: Session = Depends(get_db)):
     """
     Retrieve all reservation records.
@@ -60,7 +63,8 @@ def get_all_reservations(db: Session = Depends(get_db)):
         for res in reservations
     ]
 
-@router.post("/", response_model=schemas.ReservationOut, operation_id="createReservation")
+@router.post("/", response_model=schemas.ReservationOut, operation_id="createReservation",
+             dependencies=[Depends(require_perm(Perm.EDIT))])
 def create_reservation(reservation: schemas.ReservationCreate, db: Session = Depends(get_db)):
     """
     Create a new reservation.
@@ -71,7 +75,8 @@ def create_reservation(reservation: schemas.ReservationCreate, db: Session = Dep
         "links": generate_links("reservations", created.rezervacijos_id, ["delete"])
     }
 
-@router.put("/{rezervacijos_id}", response_model=schemas.ReservationOut, operation_id="updateReservation")
+@router.put("/{rezervacijos_id}", response_model=schemas.ReservationOut, operation_id="updateReservation",
+            dependencies=[Depends(require_perm(Perm.EDIT))])
 def update_reservation(rezervacijos_id: int, updated: schemas.ReservationUpdate, db: Session = Depends(get_db)):
     """
     Update an existing reservation.
@@ -90,7 +95,8 @@ def update_reservation(rezervacijos_id: int, updated: schemas.ReservationUpdate,
         "links": generate_links("reservations", existing.rezervacijos_id, ["delete"])
     }
 
-@router.delete("/{rezervacijos_id}", operation_id="deleteReservation")
+@router.delete("/{rezervacijos_id}", operation_id="deleteReservation",
+               dependencies=[Depends(require_perm(Perm.ADMIN))])
 def delete_reservation(rezervacijos_id: int, db: Session = Depends(get_db)):
     """
     Delete a reservation by ID.
@@ -100,7 +106,8 @@ def delete_reservation(rezervacijos_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Reservation not found")
     return {"ok": True}
 
-@router.get("/search", response_model=list[schemas.ReservationOut], operation_id="searchReservations")
+@router.get("/search", response_model=list[schemas.ReservationOut], operation_id="searchReservations",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def search_reservations(
     db: Session = Depends(get_db),
     kliento_id: Optional[int] = None,
@@ -132,7 +139,8 @@ def search_reservations(
         for res in results
     ]
 
-@router.get("/{rezervacijos_id}", response_model=schemas.ReservationOut, operation_id="getReservationById")
+@router.get("/{rezervacijos_id}", response_model=schemas.ReservationOut, operation_id="getReservationById",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_reservation(rezervacijos_id: int, db: Session = Depends(get_db)):
     """
     Retrieve reservation by ID.

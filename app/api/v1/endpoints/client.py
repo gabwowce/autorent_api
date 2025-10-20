@@ -19,13 +19,15 @@ from app.repositories import client as repo
 from app.repositories import order as order_repo
 from utils.hateoas import generate_links
 from app.api.deps import get_current_user
+from app.api.permissions import require_perm, Perm
 
 router = APIRouter(
     prefix="/clients",  
     dependencies=[Depends(get_current_user)]
 )
 
-@router.get("/", response_model=list[schemas_client.ClientOut], operation_id="getAllClients")
+@router.get("/", response_model=list[schemas_client.ClientOut], operation_id="getAllClients",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_all_clients(db: Session = Depends(get_db)):
     """
     Retrieve all clients.
@@ -47,7 +49,8 @@ def get_all_clients(db: Session = Depends(get_db)):
         for client in clients
     ]
 
-@router.get("/{kliento_id}", response_model=schemas_client.ClientOut, operation_id="getClientById")
+@router.get("/{kliento_id}", response_model=schemas_client.ClientOut, operation_id="getClientById",
+            dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_client(kliento_id: int, db: Session = Depends(get_db)):
     """
     Retrieve a client by ID.
@@ -76,6 +79,7 @@ def get_client(kliento_id: int, db: Session = Depends(get_db)):
     "/{kliento_id}",
     response_model=schemas_client.ClientOut,
     operation_id="updateClient",
+    dependencies=[Depends(require_perm(Perm.EDIT))]
 )
 def update_client(
     kliento_id: int,
@@ -115,7 +119,8 @@ def update_client(
     }
 
 
-@router.post("/", response_model=schemas_client.ClientOut, operation_id="createClient")
+@router.post("/", response_model=schemas_client.ClientOut, operation_id="createClient",
+             dependencies=[Depends(require_perm(Perm.EDIT))])
 def create_client(client: schemas_client.ClientCreate, db: Session = Depends(get_db)):
     """
     Create a new client.
@@ -135,7 +140,8 @@ def create_client(client: schemas_client.ClientCreate, db: Session = Depends(get
         "links": generate_links("clients", created.kliento_id, ["update", "delete"])
     }
 
-@router.delete("/{kliento_id}", operation_id="deleteClient")
+@router.delete("/{kliento_id}", operation_id="deleteClient",
+               dependencies=[Depends(require_perm(Perm.ADMIN))])
 def delete_client(kliento_id: int, db: Session = Depends(get_db)):
     """
     Delete a client by ID.
@@ -158,7 +164,8 @@ def delete_client(kliento_id: int, db: Session = Depends(get_db)):
     return {"ok": True}
 
 
-@router.get("/{kliento_id}/orders", response_model=list[schemas_order.OrderOut], operation_id="getClientOrder")
+@router.get("/{kliento_id}/orders", response_model=list[schemas_order.OrderOut], 
+            operation_id="getClientOrder", dependencies=[Depends(require_perm(Perm.VIEW))])
 def get_client_orders(kliento_id: int, db: Session = Depends(get_db)):
     """
     Retrieve all orders for a specific client.
